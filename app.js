@@ -276,5 +276,41 @@ function fancySlide() {
 // Change image every 4 seconds
 setInterval(fancySlide, 4000);
 
+const track = document.querySelector('.slider-track');
+const slides = Array.from(track.children);
+const nextButton = document.querySelector('.next');
+const prevButton = document.querySelector('.prev');
+
+let currentIndex = 0;
+
+function updateSlider() {
+    const slideWidth = slides[0].getBoundingClientRect().width;
+    track.style.transform = `translateX(-${slideWidth * currentIndex}px)`;
+}
+
+// Next button
+nextButton.addEventListener('click', () => {
+    currentIndex = (currentIndex + 1) % slides.length;
+    updateSlider();
+});
+
+// Previous button
+prevButton.addEventListener('click', () => {
+    currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+    updateSlider();
+});
+
+// Optional: Auto-slide every 5 seconds
+setInterval(() => {
+    currentIndex = (currentIndex + 1) % slides.length;
+    updateSlider();
+}, 5000);
+
+// Resize listener to recalc slide width
+window.addEventListener('resize', updateSlider);
+
+
+
+
 
 /* End of app.js */
