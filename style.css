@@ -306,7 +306,7 @@ footer { padding:40px 0 20px; background:#0a101b; position:relative; overflow:hi
     box-sizing: border-box;
     border-radius: 8px;
     overflow: hidden;
-    height: 300px; /* fixed height for all slides */
+    height: 400px; /* fixed height for all slides */
     position: relative;
 }
 
