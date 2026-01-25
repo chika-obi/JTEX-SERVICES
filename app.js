@@ -310,6 +310,23 @@ setInterval(() => {
 window.addEventListener('resize', updateSlider);
 
 
+  document.querySelectorAll(".leader-card").forEach(card => {
+    card.addEventListener("click", () => {
+      document.getElementById(card.dataset.modal).style.display = "flex";
+    });
+  });
+
+  document.querySelectorAll(".close").forEach(btn => {
+    btn.onclick = () => btn.closest(".modal").style.display = "none";
+  });
+
+  window.onclick = e => {
+    if (e.target.classList.contains("modal")) {
+      e.target.style.display = "none";
+    }
+  };
+
+
 
 
 

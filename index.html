@@ -41,6 +41,7 @@
         <ul>
           <li><a href="#home">Home</a></li>
           <li><a href="#about">About</a></li>
+         <li> <a href="#leadership">Management</a> </li>
           <li><a href="#services">Services</a></li>
            <li><a href="#gallery-slider">Gallery</a></li>
           <li><a href="#contact">Contact</a></li>
@@ -190,6 +191,84 @@
         </aside>
       </div>
     </section>
+
+    <!-- LEADERSHIP -->
+<section id="leadership" class="leadership reveal">
+  <div class="section-title">
+    <h2 style="background-color: #0b121f;">Leadership & Management Team</h2>
+    <p class="leadership-intro">
+  Experienced professionals providing
+  <span>strategic direction</span>,
+  <span>operational excellence</span>, and
+  <span>corporate governance</span>
+  across all JTEX Services Limited operations.
+</p>
+
+  </div>
+
+  <div class="leadership-grid">
+    <article class="leader-card">
+       <div class="leader-photo">
+      <img src="images/MDCEO.jpeg" alt="Managing Director">
+      </div>
+      <h3 style="color: #001418;">Managing Director</h3>
+      <span class="leader-name">Chimara Joe Jerry, MBA</span>
+      <p class="leader-qual">
+        <strong><i>Operations & Supply Chain Management</strong></i><hr>
+      </p>
+      <p class="leader-desc">
+        Provides strategic leadership, corporate governance, and overall business direction.
+      </p>
+    </article>
+
+    <article class="leader-card">
+       <div class="leader-photo">
+      <img src="images/GM.jpeg" alt="Managing Director">
+      </div>
+      <h3 style="color: #001418;">General Manager</h3>
+      <span class="leader-name">Ekweme Azeem Bestman, MSc</span>
+      <p class="leader-qual">
+       <strong> <i>Human Physiology | Educational Management</i></strong>
+        <hr>
+      </p>
+      <p class="leader-desc">
+        Oversees day-to-day operations, project execution, and client service delivery.
+      </p>
+    </article>
+
+     <article class="leader-card">
+       <div class="leader-photo">
+      <img src="images/IT.jpeg" alt="IT CONSULTANT">
+      </div>
+      <h3 style="color: #001418;">IT Consultant</h3>
+      <span class="leader-name">Kpanuku Chika-Obi, MSc,MNCS</span>
+      <p class="leader-qual">
+       <strong> <i>Computer Science</i></strong>
+        <hr>
+     
+      <p class="leader-desc">
+       
+         Oversees digital infrastructure, cybersecurity, and process automation.
+      </p>
+    </article>
+
+     <article class="leader-card">
+       <div class="leader-photo">
+      <img src="images/PROCUREMENT.jpeg" alt="Procurement Manager">
+      </div>
+      <h3 style="color: #001418;">Procurement Manager</h3>
+      <span class="leader-name">Chimara Joe Jackson, BSc , MBA</span>
+      <p class="leader-qual">
+       <strong> <i>IT | Procurement Management</i></strong>
+        <hr>
+      <p class="leader-desc">
+        Manages sourcing, vendor relationships, contract negotiation, and supply efficiency.
+      </p>
+    </article>
+
+  </div>
+</section>
+
 
     <!-- SERVICES -->
     <section id="services">
@@ -367,6 +446,8 @@
         </aside>
       </div>
     </section>
+    
+
  <a
   href="https://wa.me/2347035260890?text=Hello%20JTEX%20Services%2C%20I%20am%20interested%20in%20your%20services.%20Please%20get%20back%20to%20me."
   class="whatsapp-float"
@@ -412,6 +493,24 @@
       behavior: "smooth"
     });
   });
+
+  const reveals = document.querySelectorAll(".reveal");
+
+  const revealOnScroll = () => {
+    const trigger = window.innerHeight * 0.85;
+
+    reveals.forEach(section => {
+      const top = section.getBoundingClientRect().top;
+      if (top < trigger) {
+        section.classList.add("active");
+      }
+    });
+  };
+
+  window.addEventListener("scroll", revealOnScroll);
+  revealOnScroll();
+
+
 </script>
 
 
