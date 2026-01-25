@@ -375,6 +375,10 @@
 >
   <i class="fa-brands fa-whatsapp"></i>
 </a>
+<button id="backToTop" aria-label="Back to top">
+  <i class="fa-solid fa-arrow-up"></i>
+</button>
+
     <!-- FOOTER -->
     <footer>
       <canvas id="footerWave" width="1400" height="140" aria-hidden="true"></canvas>
@@ -391,7 +395,25 @@
   </main>
 
   <script src="app.js"></script>
- 
+ <script>
+  const backToTop = document.getElementById("backToTop");
+
+  window.addEventListener("scroll", () => {
+    if (window.scrollY > 300) {
+      backToTop.classList.add("show");
+    } else {
+      backToTop.classList.remove("show");
+    }
+  });
+
+  backToTop.addEventListener("click", () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  });
+</script>
+
 
 </body>
 </html>

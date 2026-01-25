@@ -371,3 +371,35 @@ footer { padding:40px 0 20px; background:#0a101b; position:relative; overflow:hi
   transform: scale(1.1);
   box-shadow: 0 15px 35px rgba(0,0,0,0.35);
 }
+
+#backToTop {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: var(--accent, teal);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(20px);
+  transition: all 0.3s ease;
+  z-index: 998;
+}
+
+#backToTop.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+#backToTop:hover {
+  background: var(--accent-2, #0d9488);
+}
