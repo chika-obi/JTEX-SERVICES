@@ -1,0 +1,6 @@
+{
+  "name": "JTEX Services Limited",
+  "description": "Drilling chemicals, industrial procurement, environmental services, and on-site technical support for Nigeria's energy sector.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
