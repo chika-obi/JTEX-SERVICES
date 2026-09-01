@@ -710,6 +710,18 @@ function initBackToTop() {
    Global Site Search System
    ========================= */
 const SEARCH_INDEX = [
+  // Company Profile & Capabilities
+  {
+    id: 'about-company-profile',
+    category: 'service',
+    badge: 'Download',
+    icon: 'fa-solid fa-file-pdf',
+    title: 'Download Company Profile & Capabilities Statement (PDF)',
+    description: 'Official 2-page executive capabilities statement, NUPRC regulatory compliance brief, RC: 1965120 corporate data, and comprehensive drilling chemical supply matrix for offline review.',
+    target: '#about',
+    keywords: ['profile', 'company profile', 'download', 'pdf', 'capabilities', 'capabilities statement', 'offline', 'brochure', 'catalog', 'statement', 'rc 1965120', 'credentials']
+  },
+
   // Services
   {
     id: 'service-drilling-chemicals',
@@ -1920,6 +1932,749 @@ function initHeroCinematicCanvas() {
 }
 
 /* ==========================================================================
+   Company Profile & Capabilities Statement PDF Generator
+   Executive-Grade 2-Page Brief for Client Offline Review & Procurement
+   ========================================================================== */
+function initCompanyProfileDownload() {
+  const downloadBtn = document.getElementById('downloadProfileBtn');
+  if (!downloadBtn) return;
+
+  downloadBtn.addEventListener('click', async () => {
+    if (downloadBtn.classList.contains('is-generating')) return;
+
+    downloadBtn.classList.add('is-generating');
+    const titleEl = downloadBtn.querySelector('.profile-btn-title');
+    const origTitle = titleEl ? titleEl.textContent : 'Download Company Profile (PDF)';
+    if (titleEl) titleEl.textContent = 'Compiling PDF Capabilities Brief...';
+
+    showToast(
+      'Generating Company Profile',
+      'Compiling the official JTEX Services capabilities statement, compliance records, and chemical matrix...',
+      'fa-solid fa-file-pdf',
+      4000
+    );
+
+    try {
+      // Small pause to allow UI update & check for jsPDF
+      await new Promise(resolve => setTimeout(resolve, 350));
+
+      const jsPDFClass = window.jspdf ? window.jspdf.jsPDF : null;
+
+      if (jsPDFClass) {
+        generateJsPdfDocument(jsPDFClass);
+        showToast(
+          'Download Complete',
+          'JTEX Services Capabilities Statement PDF has been downloaded for offline review.',
+          'fa-solid fa-circle-check',
+          5500
+        );
+      } else {
+        // Fallback: Open printable executive capabilities statement window
+        openPrintableCapabilitiesFallback();
+        showToast(
+          'Capabilities Statement Ready',
+          'Opened printable company capabilities statement. You can save or print directly as PDF.',
+          'fa-solid fa-print',
+          5500
+        );
+      }
+    } catch (err) {
+      console.error('Error generating PDF:', err);
+      openPrintableCapabilitiesFallback();
+      showToast(
+        'Capabilities Statement Ready',
+        'Prepared printable company profile. Save as PDF via your browser print dialog.',
+        'fa-solid fa-file-invoice',
+        6000
+      );
+    } finally {
+      downloadBtn.classList.remove('is-generating');
+      if (titleEl) titleEl.textContent = origTitle;
+    }
+  });
+}
+
+function generateJsPdfDocument(jsPDFClass) {
+  const doc = new jsPDFClass({
+    orientation: 'portrait',
+    unit: 'mm',
+    format: 'a4',
+    compress: true
+  });
+
+  const pageWidth = 210;
+  const pageHeight = 297;
+  const margin = 14;
+  const contentWidth = pageWidth - margin * 2;
+
+  // Colors
+  const cNavy = [8, 15, 30];
+  const cSlate = [15, 23, 42];
+  const cTeal = [13, 148, 136];
+  const cTealLight = [45, 212, 191];
+  const cAmber = [217, 119, 6];
+  const cAmberBg = [254, 243, 199];
+  const cCardBg = [246, 249, 252];
+  const cBorder = [220, 228, 236];
+  const cTextDark = [15, 23, 42];
+  const cTextMuted = [80, 95, 110];
+
+  // Helper: Draw Section Header Box
+  function drawSectionHeader(y, number, title) {
+    doc.setFillColor(cNavy[0], cNavy[1], cNavy[2]);
+    doc.roundedRect(margin, y, contentWidth, 7.5, 1.5, 1.5, 'F');
+
+    doc.setFillColor(cTeal[0], cTeal[1], cTeal[2]);
+    doc.rect(margin, y, 3.5, 7.5, 'F');
+
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9.5);
+    doc.text(`${number}. ${title.toUpperCase()}`, margin + 6, y + 5.2);
+    return y + 10.5;
+  }
+
+  // ==========================================
+  // PAGE 1: Corporate Overview & Chemical Capabilities
+  // ==========================================
+
+  // 1. Top Decorative Brand Banner
+  doc.setFillColor(cNavy[0], cNavy[1], cNavy[2]);
+  doc.rect(0, 0, pageWidth, 36, 'F');
+
+  // Accent line
+  doc.setFillColor(cTeal[0], cTeal[1], cTeal[2]);
+  doc.rect(0, 36, pageWidth, 2.2, 'F');
+  doc.setFillColor(cAmber[0], cAmber[1], cAmber[2]);
+  doc.rect(pageWidth - 45, 36, 45, 2.2, 'F');
+
+  // Brand Logo Mark in Header
+  doc.setFillColor(cTeal[0], cTeal[1], cTeal[2]);
+  doc.roundedRect(margin, 7, 10, 10, 2, 2, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(8);
+  doc.text('JTEX', margin + 1.2, 13.5);
+
+  // Company Name & Subtitle
+  doc.setTextColor(255, 255, 255);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(16);
+  doc.text('JTEX SERVICES LIMITED', margin + 14, 13);
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8.5);
+  doc.setTextColor(cTealLight[0], cTealLight[1], cTealLight[2]);
+  doc.text('CORPORATE CAPABILITIES STATEMENT • OIL & GAS INDUSTRIAL SOLUTIONS', margin + 14, 18);
+
+  doc.setFontSize(7.5);
+  doc.setTextColor(200, 215, 230);
+  doc.text('Upstream & Downstream Drilling Chemicals • Strategic MRO Procurement • Environmental Engineering', margin + 14, 23);
+
+  // Document Authority Tag (Right Side)
+  doc.setFillColor(15, 23, 42);
+  doc.roundedRect(pageWidth - margin - 58, 6.5, 58, 22, 2, 2, 'F');
+  doc.setDrawColor(cTeal[0], cTeal[1], cTeal[2]);
+  doc.setLineWidth(0.4);
+  doc.roundedRect(pageWidth - margin - 58, 6.5, 58, 22, 2, 2, 'D');
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(7.5);
+  doc.setTextColor(255, 255, 255);
+  doc.text('CORPORATE REGISTRATION', pageWidth - margin - 54, 11.5);
+  
+  doc.setTextColor(245, 158, 11);
+  doc.setFontSize(9);
+  doc.text('RC: 1965120', pageWidth - margin - 54, 16.5);
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(6.8);
+  doc.setTextColor(180, 200, 220);
+  doc.text('PORT HARCOURT, RIVERS STATE, NIGERIA', pageWidth - margin - 54, 21);
+  doc.text('DOC REF: JTEX-CAP-2026/V4', pageWidth - margin - 54, 25);
+
+  let currentY = 44;
+
+  // 2. Section 1: Executive Overview & Regulatory Badges
+  currentY = drawSectionHeader(currentY, '1', 'Corporate Overview & Regulatory Credentials');
+
+  // Summary Card Box
+  doc.setFillColor(cCardBg[0], cCardBg[1], cCardBg[2]);
+  doc.setDrawColor(cBorder[0], cBorder[1], cBorder[2]);
+  doc.setLineWidth(0.3);
+  doc.roundedRect(margin, currentY, contentWidth, 31, 2, 2, 'FD');
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8.2);
+  doc.setTextColor(cTextDark[0], cTextDark[1], cTextDark[2]);
+  const overviewText = doc.splitTextToSize(
+    'Headquartered in Port Harcourt, Nigeria, JTEX Services Limited (RC: 1965120) is a premier indigenous oilfield solutions provider specializing in the strategic procurement of drilling fluid systems, specialty chemical additives, industrial MRO engineering materials, and environmental waste management for offshore and onshore energy operators across the Niger Delta and Gulf of Guinea.',
+    contentWidth - 8
+  );
+  doc.text(overviewText, margin + 4, currentY + 5.5);
+
+  // 4 Key Credentials Badges
+  const badgeY = currentY + 18.5;
+  const badgeWidth = (contentWidth - 9) / 4;
+
+  const credentials = [
+    { title: 'LOCAL CONTENT', sub: '100% Nigerian Entity' },
+    { title: 'REGULATORY', sub: 'NUPRC Guidelines' },
+    { title: 'LEAD TIME', sub: '24-48h Regional Hubs' },
+    { title: 'QUALITY CONTROL', sub: '100% Batch COA & MSDS' }
+  ];
+
+  credentials.forEach((cred, i) => {
+    const bx = margin + 3 + i * (badgeWidth + 2);
+    doc.setFillColor(255, 255, 255);
+    doc.setDrawColor(cBorder[0], cBorder[1], cBorder[2]);
+    doc.roundedRect(bx, badgeY, badgeWidth, 9.5, 1.2, 1.2, 'FD');
+
+    doc.setFillColor(cTeal[0], cTeal[1], cTeal[2]);
+    doc.circle(bx + 3.2, badgeY + 4.8, 1.2, 'F');
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(6.5);
+    doc.setTextColor(cTextDark[0], cTextDark[1], cTextDark[2]);
+    doc.text(cred.title, bx + 6.5, badgeY + 4.2);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(6.2);
+    doc.setTextColor(cTeal[0], cTeal[1], cTeal[2]);
+    doc.text(cred.sub, bx + 6.5, badgeY + 7.8);
+  });
+
+  currentY += 36;
+
+  // 3. Section 2: Drilling Fluids & Chemical Portfolio Matrix
+  currentY = drawSectionHeader(currentY, '2', 'Drilling Fluids, Production Additives & Mud Chemicals');
+
+  // Sub-intro
+  doc.setFont('helvetica', 'italic');
+  doc.setFontSize(7.5);
+  doc.setTextColor(cTextMuted[0], cTextMuted[1], cTextMuted[2]);
+  doc.text('All chemical supplies are strictly sourced from certified manufacturers and shipped with full batch documentation.', margin, currentY);
+  currentY += 4.5;
+
+  // 3 Column Product Matrix
+  const colWidth = (contentWidth - 6) / 3;
+  const colHeight = 67;
+
+  const chemicalCategories = [
+    {
+      title: 'DRILLING & MUD CHEMICALS',
+      accent: cTeal,
+      items: [
+        'High-Density Barite (API 13A, 4.2+ SG)',
+        'Bentonite (API Spec Grade)',
+        'Potassium Chloride (KCl - 98%)',
+        'PAC-R (High Viscosity Polymer)',
+        'PAC-L (Low Viscosity Polymer)',
+        'XC Polymer (Xanthan Gum Rheology)',
+        'PHPA Shale Inhibitor & Encapsulator',
+        'Calcium Carbonate (Fine/Med/Coarse)',
+        'Caustic Soda Flakes (99% Pure)',
+        'Sodium Bicarbonate & Citric Acid'
+      ]
+    },
+    {
+      title: 'PRODUCTION & TREATMENT',
+      accent: [2, 132, 199], // Blue
+      items: [
+        'Water & Oil-Soluble Demulsifiers',
+        'Corrosion Inhibitors (High Temp)',
+        'Scale Inhibitors (Carbonate/Sulfate)',
+        'Biocides (Glutaraldehyde & THPS)',
+        'Pour Point Depressants (PPD)',
+        'Triethylene Glycol (TEG - 99.5%)',
+        'Monoethylene Glycol (MEG)',
+        'Surfactants & Degreasers',
+        'Foamers & Silicone Defoamers',
+        'H2S & Oxygen Scavengers'
+      ]
+    },
+    {
+      title: 'COMPLETION & SPECIALTY',
+      accent: cAmber,
+      items: [
+        'Calcium Chloride Brine (94-97%)',
+        'Calcium Bromide Brine (14.2 ppg)',
+        'Sodium Bromide High-Density Brine',
+        'Fluid Loss Control Additives',
+        'Cement Retarders & Accelerators',
+        'Friction Reducers & Viscosifiers',
+        'Spotting Fluids & Pipe Freeing Pills',
+        'Wellbore Cleanup Surfactants',
+        'Rig Floor Heavy-Duty Degreasers',
+        'Laboratory Reagents & Test Kits'
+      ]
+    }
+  ];
+
+  chemicalCategories.forEach((cat, idx) => {
+    const cx = margin + idx * (colWidth + 3);
+    
+    // Background card
+    doc.setFillColor(cCardBg[0], cCardBg[1], cCardBg[2]);
+    doc.setDrawColor(cBorder[0], cBorder[1], cBorder[2]);
+    doc.roundedRect(cx, currentY, colWidth, colHeight, 1.8, 1.8, 'FD');
+
+    // Category Header Box
+    doc.setFillColor(cat.accent[0], cat.accent[1], cat.accent[2]);
+    doc.roundedRect(cx, currentY, colWidth, 7, 1.8, 1.8, 'F');
+    doc.rect(cx, currentY + 5, colWidth, 2, 'F'); // square bottom
+
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(7.2);
+    doc.text(cat.title, cx + colWidth / 2, currentY + 4.8, { align: 'center' });
+
+    // Item List
+    let itemY = currentY + 11.5;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(6.8);
+    doc.setTextColor(cTextDark[0], cTextDark[1], cTextDark[2]);
+
+    cat.items.forEach(item => {
+      doc.setFillColor(cat.accent[0], cat.accent[1], cat.accent[2]);
+      doc.circle(cx + 3.2, itemY - 0.7, 0.8, 'F');
+      doc.text(item, cx + 5.5, itemY);
+      itemY += 5.5;
+    });
+  });
+
+  currentY += colHeight + 6;
+
+  // 4. Section 3: Rapid Delivery & Quality Assurance Strip
+  doc.setFillColor(238, 248, 246);
+  doc.setDrawColor(cTeal[0], cTeal[1], cTeal[2]);
+  doc.setLineWidth(0.4);
+  doc.roundedRect(margin, currentY, contentWidth, 22, 2, 2, 'FD');
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(8);
+  doc.setTextColor(cTeal[0], cTeal[1], cTeal[2]);
+  doc.text('RAPID RESPONSE & 24/7 DRILLING LOGISTICS HOT-SHOT DESK', margin + 4, currentY + 5.5);
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7.2);
+  doc.setTextColor(cTextDark[0], cTextDark[1], cTextDark[2]);
+  const logisticsNote = doc.splitTextToSize(
+    'JTEX maintains dedicated stockpiles of weighted barite, bentonite, biocides, and fluid loss polymers at our Port Harcourt marshaling hub. For active drilling emergencies, our 24/7 Hot-Shot Dispatch coordinates immediate flatbed haulage and jetty barge transfers to Onne, Warri, and offshore terminals within 24 hours of dispatch order.',
+    contentWidth - 8
+  );
+  doc.text(logisticsNote, margin + 4, currentY + 10.5);
+
+  // Page 1 Footer
+  doc.setDrawColor(cBorder[0], cBorder[1], cBorder[2]);
+  doc.setLineWidth(0.3);
+  doc.line(margin, pageHeight - 12, pageWidth - margin, pageHeight - 12);
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(6.8);
+  doc.setTextColor(cTextMuted[0], cTextMuted[1], cTextMuted[2]);
+  doc.text('JTEX Services Limited • RC: 1965120 • Official Capabilities Statement', margin, pageHeight - 7.5);
+  doc.text('Page 1 of 2', pageWidth / 2, pageHeight - 7.5, { align: 'center' });
+  doc.text('www.jtexservices.com', pageWidth - margin, pageHeight - 7.5, { align: 'right' });
+
+
+  // ==========================================
+  // PAGE 2: MRO Procurement, HSE, Leadership & Hubs
+  // ==========================================
+  doc.addPage();
+
+  // Top Compact Header
+  doc.setFillColor(cNavy[0], cNavy[1], cNavy[2]);
+  doc.rect(0, 0, pageWidth, 20, 'F');
+  doc.setFillColor(cTeal[0], cTeal[1], cTeal[2]);
+  doc.rect(0, 20, pageWidth, 1.5, 'F');
+
+  doc.setTextColor(255, 255, 255);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(11);
+  doc.text('JTEX SERVICES LIMITED (RC: 1965120)', margin, 11);
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7.5);
+  doc.setTextColor(cTealLight[0], cTealLight[1], cTealLight[2]);
+  doc.text('CAPABILITIES STATEMENT • INDUSTRIAL PROCUREMENT & FIELD SERVICES', margin, 16);
+
+  doc.setFontSize(7);
+  doc.setTextColor(200, 215, 230);
+  doc.text('PORT HARCOURT HQ • ONNE • WARRI • LAGOS', pageWidth - margin, 13.5, { align: 'right' });
+
+  currentY = 27;
+
+  // 1. Section 4: Industrial Procurement & MRO Equipment
+  currentY = drawSectionHeader(currentY, '3', 'Industrial Procurement & Technical MRO Sourcing');
+
+  // 2-Column Split for MRO
+  const mroColWidth = (contentWidth - 4) / 2;
+  const mroBoxHeight = 44;
+
+  // Box 1: Valves, Piping & Mechanical
+  doc.setFillColor(cCardBg[0], cCardBg[1], cCardBg[2]);
+  doc.setDrawColor(cBorder[0], cBorder[1], cBorder[2]);
+  doc.roundedRect(margin, currentY, mroColWidth, mroBoxHeight, 1.8, 1.8, 'FD');
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(7.8);
+  doc.setTextColor(cTextDark[0], cTextDark[1], cTextDark[2]);
+  doc.text('VALVES, PIPING & PRESSURE EQUIPMENT', margin + 4, currentY + 5.5);
+
+  const mroItems1 = [
+    'API 6D Ball, Gate, Globe, Check & Butterfly Valves',
+    'Choke Valves & High-Pressure Manifolds (Up to 15,000 PSI)',
+    'Seamless Line Pipes: API 5L Grade B, X52, X65, X70',
+    'Forged Steel Flanges (ANSI 150# - 2500#, RTJ & RF)',
+    'High-Pressure Fittings (ASTM A105, A234 WPB, Duplex)',
+    'Spiral Wound Gaskets, Ring Joints & Fasteners (B7/2H)'
+  ];
+
+  let itemSubY = currentY + 11;
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(6.8);
+  mroItems1.forEach(it => {
+    doc.setFillColor(cTeal[0], cTeal[1], cTeal[2]);
+    doc.circle(margin + 4, itemSubY - 0.7, 0.7, 'F');
+    doc.text(it, margin + 6.5, itemSubY);
+    itemSubY += 5.3;
+  });
+
+  // Box 2: Rig Spares, Instrumentation & Biometrics
+  const box2X = margin + mroColWidth + 4;
+  doc.setFillColor(cCardBg[0], cCardBg[1], cCardBg[2]);
+  doc.setDrawColor(cBorder[0], cBorder[1], cBorder[2]);
+  doc.roundedRect(box2X, currentY, mroColWidth, mroBoxHeight, 1.8, 1.8, 'FD');
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(7.8);
+  doc.setTextColor(cTextDark[0], cTextDark[1], cTextDark[2]);
+  doc.text('RIG SPARES, ELECTRICAL & SECURITY', box2X + 4, currentY + 5.5);
+
+  const mroItems2 = [
+    'Mud Pump Liners, Pistons, Valves & Fluid End Spares',
+    'Rotary Drilling Hoses, Swivel Joints & Hammer Unions',
+    'Explosion-Proof ATEX Lighting & Junction Enclosures',
+    'Biometric Access Control & CCTV Surveillance Systems',
+    'Process Instrumentation: Transmitters, Gauges & Flow Meters',
+    'Certified Marine & Offshore PPE Safety Equipment'
+  ];
+
+  itemSubY = currentY + 11;
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(6.8);
+  mroItems2.forEach(it => {
+    doc.setFillColor(cTeal[0], cTeal[1], cTeal[2]);
+    doc.circle(box2X + 4, itemSubY - 0.7, 0.7, 'F');
+    doc.text(it, box2X + 6.5, itemSubY);
+    itemSubY += 5.3;
+  });
+
+  currentY += mroBoxHeight + 6;
+
+  // 2. Section 5: Environmental Waste Management & Site Remediation
+  currentY = drawSectionHeader(currentY, '4', 'Environmental Solutions, HSE & Waste Management');
+
+  doc.setFillColor(cCardBg[0], cCardBg[1], cCardBg[2]);
+  doc.setDrawColor(cBorder[0], cBorder[1], cBorder[2]);
+  doc.roundedRect(margin, currentY, contentWidth, 26, 1.8, 1.8, 'FD');
+
+  const envItems = [
+    { title: 'Pit & Tank Cleaning', desc: 'Industrial sludge removal, offshore mud tank washing, and confined-space safe entry.' },
+    { title: 'Oil Spill Containment', desc: 'Deployment of absorbent booms, emergency skimmers, marine pads, and spill kits.' },
+    { title: 'Bio-Remediation & Waste', desc: 'Hydrocarbon-degrading microbial treatments and zero-discharge compliance auditing.' },
+    { title: 'NUPRC HSE Audits', desc: 'Rig site environmental monitoring and compliance documentation to Nigerian standards.' }
+  ];
+
+  const envWidth = (contentWidth - 6) / 2;
+  envItems.forEach((it, i) => {
+    const ex = margin + 3 + (i % 2) * (envWidth + 2);
+    const ey = currentY + 5 + Math.floor(i / 2) * 10;
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(7.2);
+    doc.setTextColor(cTeal[0], cTeal[1], cTeal[2]);
+    doc.text(`• ${it.title}:`, ex, ey);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(6.6);
+    doc.setTextColor(cTextDark[0], cTextDark[1], cTextDark[2]);
+    const titleWidth = doc.getTextWidth(`• ${it.title}: `);
+    doc.text(it.desc, ex + titleWidth, ey);
+  });
+
+  currentY += 31;
+
+  // 3. Section 6: Leadership & Executive Governance
+  currentY = drawSectionHeader(currentY, '5', 'Executive Leadership & Technical Governance');
+
+  const leaderColWidth = (contentWidth - 6) / 4;
+  const leaderBoxHeight = 32;
+
+  const leaders = [
+    { title: 'Managing Director', name: 'Chimara Joe Jerry, MBA', role: 'Strategic Operations & Supply Chain' },
+    { title: 'General Manager', name: 'Ekweme A. Bestman, MSc', role: 'Project Delivery & Client Operations' },
+    { title: 'IT Consultant', name: 'Kpanuku Chika-Obi, MSc', role: 'Digital Systems & Cybersecurity' },
+    { title: 'Procurement Mgr', name: 'Chimara Joe Jackson, MBA', role: 'Global Sourcing & Vendor Matrix' }
+  ];
+
+  leaders.forEach((ldr, idx) => {
+    const lx = margin + idx * (leaderColWidth + 2);
+    doc.setFillColor(cCardBg[0], cCardBg[1], cCardBg[2]);
+    doc.setDrawColor(cBorder[0], cBorder[1], cBorder[2]);
+    doc.roundedRect(lx, currentY, leaderColWidth, leaderBoxHeight, 1.5, 1.5, 'FD');
+
+    // Title Tag
+    doc.setFillColor(cTeal[0], cTeal[1], cTeal[2]);
+    doc.roundedRect(lx, currentY, leaderColWidth, 5.5, 1.5, 1.5, 'F');
+    doc.rect(lx, currentY + 4, leaderColWidth, 1.5, 'F');
+
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(6.5);
+    doc.text(ldr.title, lx + leaderColWidth / 2, currentY + 3.8, { align: 'center' });
+
+    // Name & Role
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(6.8);
+    doc.setTextColor(cTextDark[0], cTextDark[1], cTextDark[2]);
+    const splitName = doc.splitTextToSize(ldr.name, leaderColWidth - 4);
+    doc.text(splitName, lx + 2, currentY + 11);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(5.8);
+    doc.setTextColor(cTextMuted[0], cTextMuted[1], cTextMuted[2]);
+    const splitRole = doc.splitTextToSize(ldr.role, leaderColWidth - 4);
+    doc.text(splitRole, lx + 2, currentY + 20);
+  });
+
+  currentY += leaderBoxHeight + 6;
+
+  // 4. Section 7: Corporate Contacts & Operations Hubs
+  currentY = drawSectionHeader(currentY, '6', 'Corporate Contacts & Operational Base');
+
+  doc.setFillColor(cNavy[0], cNavy[1], cNavy[2]);
+  doc.roundedRect(margin, currentY, contentWidth, 34, 2, 2, 'F');
+
+  // Left Column: Physical & Inquiries
+  doc.setTextColor(cTealLight[0], cTealLight[1], cTealLight[2]);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(7.5);
+  doc.text('HEADQUARTERS & MARSHALING BASE:', margin + 5, currentY + 6);
+
+  doc.setTextColor(255, 255, 255);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(6.8);
+  const addr = doc.splitTextToSize(
+    'Mrs Ogechi Erhiakeme plaza, opposite A.A Rano filling Station, along Obiri Ikwerre New Airport Road, Port Harcourt, Rivers State, Nigeria.',
+    (contentWidth / 2) - 8
+  );
+  doc.text(addr, margin + 5, currentY + 11.5);
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(7.2);
+  doc.setTextColor(cAmber[0], cAmber[1], cAmber[2]);
+  doc.text('OFFICIAL COMMERCIAL CONTACTS:', margin + 5, currentY + 23);
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(6.8);
+  doc.setTextColor(240, 245, 255);
+  doc.text('Phone: +234 (0) 806 326 3302', margin + 5, currentY + 27.5);
+  doc.text('Email: jtexservices@gmail.com  |  Web: www.jtexservices.com', margin + 5, currentY + 31.5);
+
+  // Right Column: Logistics Network & Stamp Box
+  const rightColX = margin + (contentWidth / 2) + 4;
+  doc.setTextColor(cTealLight[0], cTealLight[1], cTealLight[2]);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(7.5);
+  doc.text('REGIONAL LOGISTICS DISPATCH NETWORK:', rightColX, currentY + 6);
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(6.8);
+  doc.setTextColor(255, 255, 255);
+  doc.text('• Port Harcourt Central Chemical Yard & QA Lab', rightColX, currentY + 11.5);
+  doc.text('• Onne Oil & Gas Free Zone Marine Jetty Dispatch', rightColX, currentY + 16.5);
+  doc.text('• Warri Commercial & Industrial Material Hub', rightColX, currentY + 21.5);
+  doc.text('• Lagos Corporate & International Freight Liaison', rightColX, currentY + 26.5);
+
+  doc.setFont('helvetica', 'italic');
+  doc.setFontSize(6);
+  doc.setTextColor(180, 200, 220);
+  doc.text('Verified Indigenous Enterprise • NUPRC & Local Content Compliant', rightColX, currentY + 31.5);
+
+  // Page 2 Footer
+  doc.setDrawColor(cBorder[0], cBorder[1], cBorder[2]);
+  doc.setLineWidth(0.3);
+  doc.line(margin, pageHeight - 12, pageWidth - margin, pageHeight - 12);
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(6.8);
+  doc.setTextColor(cTextMuted[0], cTextMuted[1], cTextMuted[2]);
+  doc.text('JTEX Services Limited • RC: 1965120 • Official Capabilities Statement', margin, pageHeight - 7.5);
+  doc.text('Page 2 of 2', pageWidth / 2, pageHeight - 7.5, { align: 'center' });
+  doc.text('Confidential & Authorized', pageWidth - margin, pageHeight - 7.5, { align: 'right' });
+
+  // Save the PDF
+  doc.save('JTEX_Services_Limited_Company_Profile_Capabilities.pdf');
+}
+
+/* Fallback print/save view if jsPDF library is unavailable */
+function openPrintableCapabilitiesFallback() {
+  const printWindow = window.open('', '_blank');
+  if (!printWindow) {
+    window.print();
+    return;
+  }
+
+  const html = `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <title>JTEX Services Limited — Company Profile & Capabilities Statement</title>
+      <style>
+        @page { size: A4; margin: 15mm; }
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+          color: #0f172a;
+          line-height: 1.5;
+          margin: 0;
+          padding: 20px;
+          background: #fff;
+        }
+        .header {
+          border-bottom: 3px solid #0d9488;
+          padding-bottom: 12px;
+          margin-bottom: 20px;
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+        }
+        .title { font-size: 22px; font-weight: 800; color: #080f1e; margin: 0; }
+        .subtitle { font-size: 13px; color: #0d9488; font-weight: 600; margin: 3px 0 0; }
+        .meta-box { text-align: right; font-size: 11px; color: #475569; }
+        .section-title {
+          background: #080f1e;
+          color: #fff;
+          padding: 6px 12px;
+          font-size: 13px;
+          font-weight: 700;
+          border-left: 4px solid #0d9488;
+          margin: 18px 0 10px;
+          border-radius: 2px;
+        }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .card { background: #f8fafc; border: 1px solid #e2e8f0; padding: 10px 12px; border-radius: 4px; font-size: 12px; }
+        .card h4 { margin: 0 0 6px; font-size: 12px; color: #0d9488; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; }
+        .card ul { margin: 0; padding-left: 16px; font-size: 11px; }
+        .card li { margin-bottom: 3px; }
+        .footer { margin-top: 30px; border-top: 1px solid #cbd5e1; padding-top: 10px; font-size: 10px; color: #64748b; display: flex; justify-content: space-between; }
+        @media print {
+          body { padding: 0; }
+          .no-print { display: none; }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="no-print" style="margin-bottom:15px;padding:10px;background:#e6fffa;border:1px solid #2dd4bf;border-radius:4px;display:flex;justify-content:space-between;align-items:center;">
+        <span><strong>JTEX Services Capabilities Statement</strong> (Print or Save as PDF)</span>
+        <button onclick="window.print()" style="background:#0d9488;color:#fff;border:none;padding:8px 16px;border-radius:4px;cursor:pointer;font-weight:bold;">Print / Save as PDF</button>
+      </div>
+      <div class="header">
+        <div>
+          <h1 class="title">JTEX SERVICES LIMITED</h1>
+          <div class="subtitle">CORPORATE CAPABILITIES STATEMENT & DRILLING CHEMICALS MATRIX</div>
+          <div style="font-size:11px;color:#64748b;margin-top:4px;">Upstream & Downstream Energy Solutions • Industrial Procurement • Environmental HSE</div>
+        </div>
+        <div class="meta-box">
+          <strong style="color:#d97706;font-size:13px;">RC: 1965120</strong><br>
+          Port Harcourt, Nigeria<br>
+          DOC REF: JTEX-CAP-2026/V4
+        </div>
+      </div>
+
+      <div class="section-title">1. CORPORATE OVERVIEW & REGULATORY CREDENTIALS</div>
+      <p style="font-size:12px;color:#334155;margin:0 0 10px;">
+        Headquartered in Port Harcourt, Nigeria, <strong>JTEX Services Limited (RC: 1965120)</strong> is an indigenous oilfield procurement and engineering solutions leader. We specialize in high-grade drilling fluids, specialty production chemicals, heavy MRO procurement, and environmental waste remediation across Nigeria's upstream and downstream operational assets.
+      </p>
+
+      <div class="section-title">2. DRILLING FLUIDS & SPECIALTY CHEMICALS</div>
+      <div class="grid-3">
+        <div class="card">
+          <h4>Drilling & Mud Chemicals</h4>
+          <ul>
+            <li>High-Density Barite (API 13A, 4.2+ SG)</li>
+            <li>Bentonite (API Spec Grade)</li>
+            <li>Potassium Chloride (KCl - 98%)</li>
+            <li>PAC-R / PAC-L Polymers</li>
+            <li>XC Polymer (Xanthan Gum)</li>
+            <li>PHPA Shale Stabilizers</li>
+            <li>Calcium Carbonate (Fine/Med/Coarse)</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h4>Production Additives</h4>
+          <ul>
+            <li>Water & Oil Demulsifiers</li>
+            <li>Corrosion & Scale Inhibitors</li>
+            <li>Biocides (Glutaraldehyde / THPS)</li>
+            <li>Pour Point Depressants (PPD)</li>
+            <li>Triethylene Glycol (TEG 99.5%)</li>
+            <li>Monoethylene Glycol (MEG)</li>
+            <li>Surfactants & Rig Degreasers</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h4>Completion & Specialty</h4>
+          <ul>
+            <li>Calcium Chloride Brine (94-97%)</li>
+            <li>Calcium / Sodium Bromide Brines</li>
+            <li>Fluid Loss Additives</li>
+            <li>Cement Retarders & Accelerators</li>
+            <li>Spotting & Freeing Pills</li>
+            <li>Rig Floor Heavy Degreasers</li>
+            <li>Laboratory QA/QC Reagents</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="section-title">3. INDUSTRIAL PROCUREMENT & MRO SOURCING</div>
+      <div class="grid-3">
+        <div class="card">
+          <h4>Valves & Manifolds</h4>
+          <p style="margin:0;font-size:11px;">API 6D Ball, Gate, Globe, Check, Butterfly & Choke Valves up to 15,000 PSI rating.</p>
+        </div>
+        <div class="card">
+          <h4>Piping & Flanges</h4>
+          <p style="margin:0;font-size:11px;">Seamless line pipes (API 5L Gr. B, X52, X65), forged fittings (ASTM A105, A234 WPB).</p>
+        </div>
+        <div class="card">
+          <h4>Rig Spares & Safety</h4>
+          <p style="margin:0;font-size:11px;">Mud pump spares, rotary hoses, biometric security systems, ATEX explosion-proof lighting & PPE.</p>
+        </div>
+      </div>
+
+      <div class="section-title">4. CORPORATE CONTACT & HEADQUARTERS BASE</div>
+      <div style="font-size:11px;background:#f8fafc;border:1px solid #e2e8f0;padding:10px 14px;border-radius:4px;">
+        <strong>Base Address:</strong> Mrs Ogechi Erhiakeme plaza, opposite A.A Rano filling Station, along Obiri Ikwerre New Airport Road, Port Harcourt, Rivers State, Nigeria.<br>
+        <strong>Phone:</strong> +234 (0) 806 326 3302 | <strong>Email:</strong> jtexservices@gmail.com | <strong>Web:</strong> www.jtexservices.com<br>
+        <strong>Logistics Hubs:</strong> Port Harcourt HQ • Onne Oil & Gas Free Zone • Warri Base • Lagos Central.
+      </div>
+
+      <div class="footer">
+        <span>JTEX Services Limited • RC: 1965120 • Port Harcourt, Nigeria</span>
+        <span>Authorized Official Capabilities Statement</span>
+      </div>
+    </body>
+    </html>
+  `;
+
+  printWindow.document.write(html);
+  printWindow.document.close();
+}
+
+/* ==========================================================================
    Secondary Footer Wave Canvas Helper
    ========================================================================== */
 function initWaveCanvas(canvasId, options = {}) {
@@ -1977,6 +2732,7 @@ function initApp() {
   initBackToTop();
   initPortHarcourtWeather();
   initHeroCinematicCanvas();
+  initCompanyProfileDownload();
 
   // Footer wave
   try {

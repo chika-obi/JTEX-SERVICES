@@ -374,7 +374,7 @@ nav a:hover::after, nav a.active::after {
   grid-template-columns: 1.15fr 0.85fr;
   align-items: center;
   gap: clamp(32px, 4vw, 56px);
-  padding: clamp(38px, 5vw, 64px) clamp(20px, 3.5vw, 44px);
+  padding: clamp(48px, 5.5vw, 72px) clamp(28px, 4.5vw, 58px);
   position: relative;
   border-radius: var(--radius-lg);
   border: 1px solid var(--border-accent);
@@ -877,6 +877,152 @@ section {
 .about-features li i {
   color: var(--accent-2);
   font-size: 14px;
+}
+
+/* About Download Company Profile Action Area */
+.about-download-wrapper {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.btn-download-profile {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  max-width: 480px;
+  padding: 14px 22px;
+  border-radius: var(--radius);
+  background: linear-gradient(135deg, #0d9488 0%, #14b8a6 50%, #2dd4bf 100%);
+  color: #001e22;
+  border: 1px solid rgba(45, 212, 191, 0.4);
+  box-shadow: 0 6px 20px rgba(13, 148, 136, 0.35), 0 0 1px 1px rgba(255, 255, 255, 0.15) inset;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-download-profile::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+  transition: left 0.75s ease;
+}
+
+.btn-download-profile:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+  box-shadow: 0 10px 28px rgba(13, 148, 136, 0.5), 0 0 20px rgba(45, 212, 191, 0.4);
+}
+
+.btn-download-profile:hover::before {
+  left: 100%;
+}
+
+.btn-download-profile:active {
+  transform: translateY(0);
+}
+
+.profile-btn-icon {
+  font-size: 26px;
+  color: #002e33;
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+}
+
+.btn-download-profile:hover .profile-btn-icon {
+  transform: scale(1.1) rotate(-4deg);
+}
+
+.profile-btn-label {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.profile-btn-title {
+  font-size: 15px;
+  font-weight: 800;
+  font-family: 'Poppins', sans-serif;
+  letter-spacing: -0.01em;
+  color: #022c30;
+  line-height: 1.25;
+}
+
+.profile-btn-subtitle {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: rgba(2, 44, 48, 0.82);
+  margin-top: 2px;
+  letter-spacing: 0.2px;
+}
+
+.profile-btn-arrow {
+  font-size: 15px;
+  color: #022c30;
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+  background: rgba(255, 255, 255, 0.25);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-download-profile:hover .profile-btn-arrow {
+  transform: translateY(2px);
+  background: rgba(255, 255, 255, 0.45);
+}
+
+.btn-download-profile.is-generating {
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+.btn-download-profile.is-generating .profile-btn-icon {
+  animation: spinProfileIcon 1s linear infinite;
+}
+
+@keyframes spinProfileIcon {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.profile-download-notes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.profile-meta-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border);
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.profile-meta-tag i {
+  color: var(--accent-2);
+  font-size: 11px;
 }
 
 .about .meta {
@@ -3509,7 +3655,7 @@ footer {
 /* ===== Desktop / Large Screens (>= 1200px) ===== */
 @media (min-width: 1200px) {
   .hero {
-    padding: 70px 0 60px;
+    padding: 64px 56px 58px;
   }
 }
 
@@ -3582,7 +3728,7 @@ footer {
   .hero {
     grid-template-columns: 1fr;
     gap: 36px;
-    padding: 40px 0 30px;
+    padding: 44px 32px 36px;
   }
 
   .hero-showcase-card {
@@ -3719,7 +3865,7 @@ footer {
   }
 
   .hero {
-    padding: 24px 0 20px;
+    padding: 28px 18px 24px;
     gap: 24px;
   }
 
