@@ -1674,7 +1674,7 @@ function initPortHarcourtWeather() {
 
 /* ==========================================================================
    Hero Section Cinematic Video-Like Dynamic Backdrop
-   Drilling Fluid Dynamics, Viscosity Particles, Sonar Radar & Energy Currents
+   Drilling Fluid Dynamics, Polymer Molecular Networks & Chemical Suspension Particles
    ========================================================================== */
 function initHeroCinematicCanvas() {
   const canvas = document.getElementById('heroCinematicCanvas');
@@ -1691,9 +1691,10 @@ function initHeroCinematicCanvas() {
   const mouse = { x: -1000, y: -1000, targetX: -1000, targetY: -1000, active: false };
   const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Particle System (Hydrocarbon Molecules, Barite & Drilling Fluid Suspensions)
-  const PARTICLE_COUNT = 48;
+  // Particle Counts scaled to screen size
   const particles = [];
+  const MAX_PARTICLES_DESKTOP = 65;
+  const MAX_PARTICLES_MOBILE = 35;
 
   function resizeCanvas() {
     const rect = heroSection.getBoundingClientRect();
@@ -1706,40 +1707,93 @@ function initHeroCinematicCanvas() {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
+  // Particle System: Polymer Molecules, Barite Crystals, Hydrocarbon Micro-bubbles & Catalyst Ions
   function createParticles() {
     particles.length = 0;
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
+    const count = width < 768 ? MAX_PARTICLES_MOBILE : MAX_PARTICLES_DESKTOP;
+    
+    for (let i = 0; i < count; i++) {
+      const typeRand = Math.random();
+      let type = 'polymer'; // default
+      let radius = 1.6 + Math.random() * 2.2;
+      let alpha = 0.2 + Math.random() * 0.45;
+      let color = 'rgba(45, 212, 191, '; // Emerald Teal
+
+      if (typeRand < 0.22) {
+        // Type 1: Catalyst Polymer Core Node (with orbital ring)
+        type = 'catalyst';
+        radius = 2.8 + Math.random() * 2.0;
+        alpha = 0.45 + Math.random() * 0.4;
+        color = 'rgba(45, 212, 191, ';
+      } else if (typeRand < 0.50) {
+        // Type 2: Hydrocarbon & Alkane Cyan Ion
+        type = 'hydrocarbon';
+        radius = 1.4 + Math.random() * 2.0;
+        alpha = 0.25 + Math.random() * 0.45;
+        color = 'rgba(56, 189, 248, '; // Petroleum Cyan
+      } else if (typeRand < 0.68) {
+        // Type 3: Reaction Spark / Energy Ion (Amber)
+        type = 'energy';
+        radius = 1.8 + Math.random() * 1.8;
+        alpha = 0.35 + Math.random() * 0.45;
+        color = 'rgba(245, 158, 11, '; // Amber Energy
+      } else if (typeRand < 0.84) {
+        // Type 4: Buoyant Drilling Fluid Micro-Bubble
+        type = 'bubble';
+        radius = 2.0 + Math.random() * 2.5;
+        alpha = 0.18 + Math.random() * 0.35;
+        color = 'rgba(14, 165, 233, '; // Deep Cyan
+      } else {
+        // Type 5: Barite / Weighting suspension crystal
+        type = 'barite';
+        radius = 1.2 + Math.random() * 1.6;
+        alpha = 0.3 + Math.random() * 0.4;
+        color = 'rgba(255, 255, 255, '; // Pure Quartz White
+      }
+
       particles.push({
+        type: type,
         x: Math.random() * (width || 1200),
         y: Math.random() * (height || 600),
-        vx: (Math.random() - 0.5) * 0.35,
-        vy: -0.15 - Math.random() * 0.35, // Gentle buoyant float upward
-        radius: 1.2 + Math.random() * 2.2,
-        alpha: 0.18 + Math.random() * 0.45,
-        pulseSpeed: 0.015 + Math.random() * 0.02,
+        vx: (Math.random() - 0.5) * (type === 'catalyst' ? 0.25 : 0.45),
+        vy: type === 'bubble' ? -0.35 - Math.random() * 0.45 : -0.12 - Math.random() * 0.3,
+        radius: radius,
+        baseRadius: radius,
+        alpha: alpha,
+        pulseSpeed: 0.018 + Math.random() * 0.024,
         pulseAngle: Math.random() * Math.PI * 2,
-        // Brand Palette: Emerald Teal (#2dd4bf), Hydrocarbon Cyan (#38bdf8), Energy Amber (#f59e0b)
-        color: i % 6 === 0 
-          ? 'rgba(245, 158, 11, ' // Amber energy
-          : i % 2 === 0 
-            ? 'rgba(45, 212, 191, ' // Emerald teal
-            : 'rgba(56, 189, 248, ' // Hydrocarbon cyan
+        ringPulse: Math.random() * Math.PI * 2,
+        ringSpeed: 0.02 + Math.random() * 0.015,
+        color: color,
+        sinOffset: Math.random() * 100,
+        sinSpeed: 0.01 + Math.random() * 0.02
       });
     }
   }
 
-  // Sonar Rings (Offshore Wellbore & Rig Telemetry Radar)
+  // Sonar Rings (Wellbore & Offshore Telemetry Radar Echoes)
   const sonarRings = [
-    { x: 0.78, y: 0.48, radius: 15, maxRadius: 260, speed: 0.55, alpha: 0.25 },
-    { x: 0.78, y: 0.48, radius: 130, maxRadius: 260, speed: 0.55, alpha: 0.12 }
+    { x: 0.78, y: 0.48, radius: 20, maxRadius: 280, speed: 0.52, alpha: 0.26 },
+    { x: 0.78, y: 0.48, radius: 120, maxRadius: 280, speed: 0.52, alpha: 0.16 },
+    { x: 0.78, y: 0.48, radius: 220, maxRadius: 280, speed: 0.52, alpha: 0.08 }
   ];
 
-  // Mouse interaction
-  heroSection.addEventListener('mousemove', (e) => {
+  // Mouse & Touch interaction for dynamic fluid viscosity disturbance
+  function updatePointer(clientX, clientY) {
     const rect = heroSection.getBoundingClientRect();
-    mouse.targetX = e.clientX - rect.left;
-    mouse.targetY = e.clientY - rect.top;
+    mouse.targetX = clientX - rect.left;
+    mouse.targetY = clientY - rect.top;
     mouse.active = true;
+  }
+
+  heroSection.addEventListener('mousemove', (e) => {
+    updatePointer(e.clientX, e.clientY);
+  }, { passive: true });
+
+  heroSection.addEventListener('touchmove', (e) => {
+    if (e.touches && e.touches.length > 0) {
+      updatePointer(e.touches[0].clientX, e.touches[0].clientY);
+    }
   }, { passive: true });
 
   heroSection.addEventListener('mouseleave', () => {
@@ -1748,70 +1802,78 @@ function initHeroCinematicCanvas() {
     mouse.targetY = -1000;
   });
 
+  heroSection.addEventListener('touchend', () => {
+    mouse.active = false;
+    mouse.targetX = -1000;
+    mouse.targetY = -1000;
+  });
+
+  // Drilling Fluid Rheology Waves & Laminar Streamlines
   function drawFluidWaves(time) {
-    // Wave 1: Deep Petroleum Cyan Fluid Flow
+    // Wave 1: Primary Viscous Mud Stream
     ctx.save();
     ctx.beginPath();
     ctx.moveTo(0, height);
     for (let x = 0; x <= width; x += 12) {
       const y = height * 0.70 +
-        Math.sin(x * 0.0035 + time * 0.0007) * 28 +
-        Math.cos(x * 0.007 + time * 0.0011) * 16;
+        Math.sin(x * 0.0032 + time * 0.00065) * 26 +
+        Math.cos(x * 0.0068 + time * 0.00105) * 15;
       ctx.lineTo(x, y);
     }
     ctx.lineTo(width, height);
     ctx.closePath();
     const grad1 = ctx.createLinearGradient(0, height * 0.5, width, height);
-    grad1.addColorStop(0, 'rgba(13, 148, 136, 0.13)');
-    grad1.addColorStop(0.5, 'rgba(14, 165, 233, 0.09)');
-    grad1.addColorStop(1, 'rgba(15, 23, 42, 0.28)');
+    grad1.addColorStop(0, 'rgba(13, 148, 136, 0.12)');
+    grad1.addColorStop(0.5, 'rgba(14, 165, 233, 0.08)');
+    grad1.addColorStop(1, 'rgba(15, 23, 42, 0.25)');
     ctx.fillStyle = grad1;
     ctx.fill();
     ctx.restore();
 
-    // Wave 2: Upper Shimmer Stream
+    // Wave 2: Upper Shimmer Flow Stream
     ctx.save();
     ctx.beginPath();
     ctx.moveTo(0, height);
     for (let x = 0; x <= width; x += 10) {
       const y = height * 0.78 +
-        Math.sin(x * 0.0048 - time * 0.0009) * 22 +
-        Math.sin(x * 0.0095 + time * 0.0014) * 10;
+        Math.sin(x * 0.0045 - time * 0.00085) * 20 +
+        Math.sin(x * 0.0092 + time * 0.0013) * 10;
       ctx.lineTo(x, y);
     }
     ctx.lineTo(width, height);
     ctx.closePath();
     const grad2 = ctx.createLinearGradient(width, height * 0.6, 0, height);
-    grad2.addColorStop(0, 'rgba(45, 212, 191, 0.09)');
-    grad2.addColorStop(1, 'rgba(2, 132, 199, 0.03)');
+    grad2.addColorStop(0, 'rgba(45, 212, 191, 0.085)');
+    grad2.addColorStop(1, 'rgba(2, 132, 199, 0.025)');
     ctx.fillStyle = grad2;
     ctx.fill();
     ctx.restore();
 
-    // Wave 3: Subtle Glowing Subsea Wireframe Crest Line
+    // Wave 3: Subsea Telemetry Crest Line
     ctx.save();
     ctx.beginPath();
-    for (let x = 0; x <= width; x += 15) {
+    for (let x = 0; x <= width; x += 14) {
       const y = height * 0.65 +
-        Math.sin(x * 0.0029 + time * 0.0005) * 34 +
-        Math.cos(x * 0.0058 - time * 0.0008) * 14;
+        Math.sin(x * 0.0028 + time * 0.00048) * 32 +
+        Math.cos(x * 0.0055 - time * 0.00078) * 12;
       if (x === 0) ctx.moveTo(x, y);
       else ctx.lineTo(x, y);
     }
-    ctx.strokeStyle = 'rgba(45, 212, 191, 0.16)';
+    ctx.strokeStyle = 'rgba(45, 212, 191, 0.15)';
     ctx.lineWidth = 1.2;
     ctx.stroke();
     ctx.restore();
   }
 
+  // Sonar / Acoustic Telemetry Rings
   function drawSonarTelemetry() {
-    const originX = width * 0.78;
-    const originY = height * 0.48;
+    const originX = width * (width < 768 ? 0.85 : 0.78);
+    const originY = height * (width < 768 ? 0.35 : 0.48);
 
     sonarRings.forEach(ring => {
       ring.radius += ring.speed;
       if (ring.radius > ring.maxRadius) {
-        ring.radius = 10;
+        ring.radius = 12;
       }
       const progress = ring.radius / ring.maxRadius;
       const currentAlpha = ring.alpha * (1 - progress);
@@ -1827,62 +1889,111 @@ function initHeroCinematicCanvas() {
     });
   }
 
+  // Draw Chemical Particles, Molecular Links, Catalyst Orbitals & Bubbles
   function drawParticlesAndBonds() {
     mouse.x += (mouse.targetX - mouse.x) * 0.08;
     mouse.y += (mouse.targetY - mouse.y) * 0.08;
 
+    const maxBondDistance = width < 768 ? 72 : 96;
+
     for (let i = 0; i < particles.length; i++) {
       const p = particles[i];
 
-      p.x += p.vx;
+      // Update positions with sinusoidal sway
+      p.sinOffset += p.sinSpeed;
+      p.x += p.vx + Math.sin(p.sinOffset) * 0.18;
       p.y += p.vy;
       p.pulseAngle += p.pulseSpeed;
+      p.ringPulse += p.ringSpeed;
 
-      if (p.x < -20) p.x = width + 20;
-      if (p.x > width + 20) p.x = -20;
-      if (p.y < -20) p.y = height + 20;
-      if (p.y > height + 20) p.y = -20;
+      // Wrap around bounds gracefully
+      if (p.x < -30) p.x = width + 30;
+      if (p.x > width + 30) p.x = -30;
+      if (p.y < -30) p.y = height + 30;
+      if (p.y > height + 30) p.y = -30;
 
-      // Mouse repulsion
+      // Viscous Fluid Interaction with Pointer
       if (mouse.active) {
         const dx = p.x - mouse.x;
         const dy = p.y - mouse.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 120 && dist > 0) {
-          const force = (120 - dist) / 120 * 0.7;
-          p.x += (dx / dist) * force;
-          p.y += (dy / dist) * force;
+        const radiusLimit = width < 768 ? 90 : 130;
+        if (dist < radiusLimit && dist > 0) {
+          const force = ((radiusLimit - dist) / radiusLimit) * 0.75;
+          p.x += (dx / dist) * force * 1.4;
+          p.y += (dy / dist) * force * 1.4;
         }
       }
 
-      const pulseAlpha = Math.max(0.08, p.alpha * (0.7 + 0.3 * Math.sin(p.pulseAngle)));
+      const pulseAlpha = Math.max(0.06, p.alpha * (0.75 + 0.25 * Math.sin(p.pulseAngle)));
 
-      // Draw particle
+      // 1. Draw Molecular Node
       ctx.save();
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
       ctx.fillStyle = `${p.color}${pulseAlpha})`;
-      ctx.shadowColor = `${p.color}0.5)`;
-      ctx.shadowBlur = 5;
+      ctx.shadowColor = `${p.color}0.6)`;
+      ctx.shadowBlur = p.type === 'catalyst' || p.type === 'energy' ? 7 : 4;
       ctx.fill();
       ctx.restore();
 
-      // Connect nearby particles (Polymer chains)
+      // 2. Extra Chemical Features by Particle Type
+      if (p.type === 'catalyst') {
+        // Orbital Electron / Chemical Halo Ring
+        const ringRadius = p.radius * (1.8 + 0.4 * Math.sin(p.ringPulse));
+        const ringAlpha = pulseAlpha * 0.35;
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, ringRadius, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(45, 212, 191, ${ringAlpha})`;
+        ctx.lineWidth = 0.8;
+        ctx.stroke();
+        ctx.restore();
+      } else if (p.type === 'bubble') {
+        // Specular highlight on micro-bubbles
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(p.x - p.radius * 0.35, p.y - p.radius * 0.35, p.radius * 0.28, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${pulseAlpha * 0.8})`;
+        ctx.fill();
+        ctx.restore();
+      }
+
+      // 3. Connect Nearby Particles (Polymer Chains & Covalent Bonds)
       for (let j = i + 1; j < particles.length; j++) {
         const p2 = particles[j];
         const dx = p.x - p2.x;
         const dy = p.y - p2.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
-        if (dist < 85) {
-          const lineAlpha = (1 - dist / 85) * 0.12 * pulseAlpha;
+        if (dist < maxBondDistance) {
+          const proximity = 1 - dist / maxBondDistance;
+          const lineAlpha = proximity * 0.15 * pulseAlpha;
+
           ctx.save();
           ctx.beginPath();
           ctx.moveTo(p.x, p.y);
           ctx.lineTo(p2.x, p2.y);
-          ctx.strokeStyle = `rgba(45, 212, 191, ${lineAlpha})`;
-          ctx.lineWidth = 0.8;
+          
+          // Subtle color blend between particles
+          const strokeColor = p.type === 'energy' || p2.type === 'energy' 
+            ? `rgba(245, 158, 11, ${lineAlpha * 1.1})` 
+            : `rgba(45, 212, 191, ${lineAlpha})`;
+            
+          ctx.strokeStyle = strokeColor;
+          ctx.lineWidth = 0.85;
           ctx.stroke();
+
+          // Small midpoint covalent bond node for closer molecules
+          if (dist < maxBondDistance * 0.45 && (p.type === 'catalyst' || p2.type === 'catalyst')) {
+            const midX = (p.x + p2.x) / 2;
+            const midY = (p.y + p2.y) / 2;
+            ctx.beginPath();
+            ctx.arc(midX, midY, 1.0, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(56, 189, 248, ${lineAlpha * 1.5})`;
+            ctx.fill();
+          }
+
           ctx.restore();
         }
       }
@@ -1903,7 +2014,7 @@ function initHeroCinematicCanvas() {
     }
   }
 
-  // Viewport intersection observer to conserve CPU/battery when scrolled away
+  // Viewport IntersectionObserver to conserve CPU & battery when scrolled away
   if ('IntersectionObserver' in window) {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
@@ -1921,6 +2032,9 @@ function initHeroCinematicCanvas() {
 
   window.addEventListener('resize', () => {
     resizeCanvas();
+    if (particles.length === 0 || width !== canvas.width) {
+      createParticles();
+    }
     if (prefersReducedMotion) {
       render(0);
     }
