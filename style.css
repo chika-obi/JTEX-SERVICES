@@ -1133,7 +1133,7 @@ section {
 }
 
 .leader-card:nth-child(2) .leader-photo img {
-  object-position: 50% 10%;
+  object-position: center center;
 }
 
 .leader-card:nth-child(3) .leader-photo img {
