@@ -873,9 +873,9 @@ const SEARCH_INDEX = [
     badge: 'Leadership',
     icon: 'fa-solid fa-laptop-code',
     title: 'Kpanuku Chika-Obi, MSc, MNCS — IT Consultant',
-    description: 'IT and cybersecurity consultant overseeing digital infrastructure, biometric systems, enterprise data security, and automated workflows.',
+    description: 'Computer Scientist and IT Consultant overseeing enterprise digital systems, cybersecurity, cloud architecture, and process automation for JTEX Services Limited.',
     target: '#leadership',
-    keywords: ['kpanuku', 'chika-obi', 'it consultant', 'cybersecurity', 'digital', 'technology', 'systems', 'infrastructure']
+    keywords: ['kpanuku', 'chika-obi', 'kpanuku chika-obi', 'it consultant', 'computer scientist', 'computer science', 'msc computer science', 'bsc computer science', 'mncs', 'cybersecurity', 'digital infrastructure', 'cloud', 'technology']
   },
   {
     id: 'lead-procurement',
@@ -988,7 +988,15 @@ function initGlobalSearch() {
   // Perform search query
   function getSearchResults(query, category) {
     const cleanQuery = (query || '').toLowerCase().trim();
-    let items = SEARCH_INDEX;
+    let items = SEARCH_INDEX.filter(item => {
+      if (item.category === 'service') {
+        const serviceKey = item.id.replace('service-', '');
+        if (typeof currentServicesVisibility !== 'undefined' && currentServicesVisibility[serviceKey] === false) {
+          return false;
+        }
+      }
+      return true;
+    });
 
     if (category !== 'all') {
       items = items.filter(item => item.category === category);
@@ -1029,6 +1037,11 @@ function initGlobalSearch() {
     if (!resultItem) return;
 
     if (resultItem.isExternal) {
+      if (resultItem.id === 'portal-receipts' && typeof window.openReceiptPinModal === 'function') {
+        closeSearch();
+        window.openReceiptPinModal();
+        return;
+      }
       window.open(resultItem.target, '_blank', 'noopener,noreferrer');
       closeSearch();
       return;
@@ -2529,7 +2542,7 @@ function generateJsPdfDocument(jsPDFClass) {
   const leaders = [
     { title: 'Managing Director', name: 'Chimara Joe Jerry, MBA', role: 'Strategic Operations & Supply Chain' },
     { title: 'General Manager', name: 'Ekweme A. Bestman, MSc', role: 'Project Delivery & Client Operations' },
-    { title: 'IT Consultant', name: 'Kpanuku Chika-Obi, MSc', role: 'Digital Systems & Cybersecurity' },
+    { title: 'IT Consultant', name: 'Kpanuku Chika-Obi, MSc', role: 'Computer Science & Digital Systems' },
     { title: 'Procurement Mgr', name: 'Chimara Joe Jackson, MBA', role: 'Global Sourcing & Vendor Matrix' }
   ];
 
@@ -2831,6 +2844,1459 @@ function initWaveCanvas(canvasId, options = {}) {
   renderWave();
 }
 
+/* ==========================================================================
+   DYNAMIC SITE CONFIG, PERSISTENT IMAGES & OPERATIONAL SERVICE STATUS
+   ========================================================================== */
+const DEFAULT_SITE_IMAGES = {
+  hero: 'images/md.jpeg',
+  md: 'images/MDCEO.jpeg',
+  gm: 'images/IMG-20260907-WA0014.jpg',
+  it: 'images/IT2.jpeg',
+  procurement: 'images/PROCUREMENT.jpeg'
+};
+
+const IMAGE_TARGET_MAP = {
+  hero: '#heroShowcaseImg',
+  md: '#leaderImgMd',
+  gm: '#leaderImgGm',
+  it: '#leaderImgIt',
+  procurement: '#leaderImgProcurement'
+};
+
+const DEFAULT_SERVICES_VISIBILITY = {
+  'drilling-chemicals': true,
+  'procurement': true,
+  'environmental': true,
+  'logistics': true,
+  'security': true,
+  'contracts': true
+};
+
+let currentServicesVisibility = { ...DEFAULT_SERVICES_VISIBILITY };
+
+const SERVICE_TARGET_MAP = {
+  'drilling-chemicals': '#service-drilling-chemicals',
+  'procurement': '#service-procurement',
+  'environmental': '#service-environmental',
+  'logistics': '#service-logistics',
+  'security': '#service-security',
+  'contracts': '#service-contracts'
+};
+
+function applySiteImages(images) {
+  if (!images || typeof images !== 'object') return;
+  Object.keys(IMAGE_TARGET_MAP).forEach(key => {
+    const selector = IMAGE_TARGET_MAP[key];
+    const el = document.querySelector(selector);
+    const newSrc = images[key];
+    if (el && newSrc) {
+      el.src = newSrc;
+    }
+    const thumbEl = document.getElementById(`adminThumb_${key}`);
+    if (thumbEl && newSrc) {
+      thumbEl.src = newSrc;
+    }
+  });
+}
+
+function applyServicesVisibility(visibilityMap) {
+  if (!visibilityMap || typeof visibilityMap !== 'object') return;
+
+  Object.keys(DEFAULT_SERVICES_VISIBILITY).forEach(key => {
+    if (typeof visibilityMap[key] === 'boolean') {
+      currentServicesVisibility[key] = visibilityMap[key];
+    }
+  });
+
+  let activeCount = 0;
+  let pausedCount = 0;
+
+  Object.keys(SERVICE_TARGET_MAP).forEach(key => {
+    const selector = SERVICE_TARGET_MAP[key];
+    const cardEl = document.querySelector(selector);
+    const isVisible = currentServicesVisibility[key] !== false;
+
+    if (cardEl) {
+      if (isVisible) {
+        cardEl.classList.remove('service-hidden');
+        cardEl.style.display = '';
+        cardEl.removeAttribute('aria-hidden');
+      } else {
+        cardEl.classList.add('service-hidden');
+        cardEl.style.display = 'none';
+        cardEl.setAttribute('aria-hidden', 'true');
+      }
+    }
+
+    if (isVisible) {
+      activeCount++;
+    } else {
+      pausedCount++;
+    }
+
+    // Sync Admin UI toggles and badges if loaded
+    const toggleEl = document.getElementById(`adminOpToggle_${key}`);
+    if (toggleEl) {
+      toggleEl.checked = isVisible;
+    }
+
+    const opCardEl = document.getElementById(`adminOpCard_${key}`);
+    if (opCardEl) {
+      opCardEl.classList.toggle('paused', !isVisible);
+    }
+
+    const badgeEl = document.getElementById(`adminOpBadge_${key}`);
+    if (badgeEl) {
+      if (isVisible) {
+        badgeEl.className = 'admin-op-badge active';
+        badgeEl.innerHTML = '<i class="fa-solid fa-circle-check"></i> Live on Site';
+      } else {
+        badgeEl.className = 'admin-op-badge paused';
+        badgeEl.innerHTML = '<i class="fa-solid fa-eye-slash"></i> Hidden / Paused';
+      }
+    }
+  });
+
+  // Empty-state notice if all 6 services are toggled off
+  const noServicesNotice = document.getElementById('noServicesNotice');
+  if (noServicesNotice) {
+    noServicesNotice.style.display = activeCount === 0 ? 'flex' : 'none';
+  }
+
+  // Update summary stats in Admin Console
+  const statActive = document.getElementById('adminOpStatActive');
+  if (statActive) statActive.textContent = activeCount;
+
+  const statPaused = document.getElementById('adminOpStatPaused');
+  if (statPaused) statPaused.textContent = pausedCount;
+}
+
+async function loadSiteConfig() {
+  try {
+    const cachedImages = localStorage.getItem('jtex_site_images');
+    if (cachedImages) {
+      applySiteImages(JSON.parse(cachedImages));
+    }
+    const cachedServices = localStorage.getItem('jtex_services_visibility');
+    if (cachedServices) {
+      applyServicesVisibility(JSON.parse(cachedServices));
+    }
+  } catch (e) { /* ignore */ }
+
+  try {
+    const res = await fetch('/api/site-config');
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.success) {
+        if (data.images) {
+          applySiteImages(data.images);
+          try {
+            localStorage.setItem('jtex_site_images', JSON.stringify(data.images));
+          } catch (e) { /* ignore */ }
+        }
+        if (data.servicesVisibility) {
+          applyServicesVisibility(data.servicesVisibility);
+          try {
+            localStorage.setItem('jtex_services_visibility', JSON.stringify(data.servicesVisibility));
+          } catch (e) { /* ignore */ }
+        }
+      }
+    }
+  } catch (err) {
+    console.warn('Could not fetch server site-config:', err);
+  }
+}
+
+/* ==========================================================================
+   RECEIPT DATABASE PIN ACCESS SECURITY MODAL
+   ========================================================================== */
+function initReceiptPinModal() {
+  const modal = document.getElementById('receiptPinModal');
+  const footerLink = document.getElementById('footerReceiptLink');
+  const closeBtn = document.getElementById('receiptModalCloseBtn');
+  
+  const pinDisplay = document.getElementById('receiptPinDisplay');
+  const pinSlots = document.querySelectorAll('#receiptPinDisplay .pin-slot');
+  const hiddenInput = document.getElementById('receiptHiddenPinInput');
+  const alertMsg = document.getElementById('receiptAlertMsg');
+  const keypad = document.getElementById('receiptKeypad');
+  const clearBtn = document.getElementById('keypadClearBtn');
+  const unlockBtn = document.getElementById('keypadUnlockBtn');
+
+  if (!modal) return;
+
+  const RECEIPT_URL = 'https://jtex-services-receipt-database.vercel.app/';
+  let enteredPin = '';
+  let isVerifying = false;
+
+  function openModal() {
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    clearPin();
+    clearAlert();
+    setTimeout(() => {
+      if (hiddenInput) hiddenInput.focus();
+    }, 150);
+  }
+
+  function closeModal() {
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    clearPin();
+    clearAlert();
+  }
+
+  window.openReceiptPinModal = openModal;
+  window.closeReceiptPinModal = closeModal;
+
+  if (footerLink) {
+    footerLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      openModal();
+    });
+  }
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', closeModal);
+  }
+
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closeModal();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (!modal.classList.contains('open')) return;
+
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      closeModal();
+      return;
+    }
+
+    if (!isVerifying) {
+      if (e.key >= '0' && e.key <= '9') {
+        e.preventDefault();
+        appendDigit(e.key);
+      } else if (e.key === 'Backspace') {
+        e.preventDefault();
+        deleteDigit();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (enteredPin.length === 4) {
+          verifyPin();
+        }
+      }
+    }
+  });
+
+  function updatePinDisplay() {
+    pinSlots.forEach((slot, index) => {
+      slot.classList.remove('active', 'filled', 'success', 'error');
+
+      if (index < enteredPin.length) {
+        slot.classList.add('filled');
+        slot.textContent = '';
+        const newDot = document.createElement('span');
+        newDot.className = 'pin-dot';
+        slot.appendChild(newDot);
+      } else {
+        slot.textContent = '';
+        const newDot = document.createElement('span');
+        newDot.className = 'pin-dot';
+        slot.appendChild(newDot);
+        if (index === enteredPin.length) {
+          slot.classList.add('active');
+        }
+      }
+    });
+
+    if (hiddenInput) {
+      hiddenInput.value = enteredPin;
+    }
+  }
+
+  function appendDigit(digit) {
+    if (enteredPin.length >= 4 || isVerifying) return;
+    enteredPin += digit;
+    clearAlert();
+    updatePinDisplay();
+
+    if (enteredPin.length === 4) {
+      setTimeout(verifyPin, 150);
+    }
+  }
+
+  function deleteDigit() {
+    if (enteredPin.length === 0 || isVerifying) return;
+    enteredPin = enteredPin.slice(0, -1);
+    clearAlert();
+    updatePinDisplay();
+  }
+
+  function clearPin() {
+    enteredPin = '';
+    updatePinDisplay();
+  }
+
+  function showAlert(message, type = 'error') {
+    if (!alertMsg) return;
+    alertMsg.className = `receipt-alert-msg ${type}`;
+    const icon = type === 'success' ? 'fa-solid fa-circle-check' : 'fa-solid fa-triangle-exclamation';
+    alertMsg.innerHTML = `<i class="${icon}"></i> <span>${message}</span>`;
+    alertMsg.style.display = 'flex';
+  }
+
+  function clearAlert() {
+    if (!alertMsg) return;
+    alertMsg.style.display = 'none';
+    alertMsg.innerHTML = '';
+  }
+
+  async function verifyPin() {
+    if (isVerifying) return;
+    if (enteredPin.length < 4) {
+      showAlert('Please enter the full 4-digit PIN.', 'error');
+      return;
+    }
+
+    isVerifying = true;
+
+    let isValid = false;
+    try {
+      const res = await fetch('/api/verify-receipt-pin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pin: enteredPin })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        isValid = data.valid === true;
+      } else {
+        isValid = false;
+      }
+    } catch (err) {
+      const localPin = localStorage.getItem('jtex_receipt_pin') || '1965';
+      isValid = enteredPin === localPin;
+    }
+
+    if (isValid) {
+      pinSlots.forEach(slot => {
+        slot.classList.remove('active', 'error');
+        slot.classList.add('success');
+      });
+      showAlert('PIN Verified! Access granted to receipt database.', 'success');
+
+      if (typeof showToast === 'function') {
+        showToast('Receipt Database Unlocked', 'Authenticated secure session. Opening portal...', 'fa-solid fa-lock-open', 3500);
+      }
+
+      setTimeout(() => {
+        const openedWin = window.open(RECEIPT_URL, '_blank', 'noopener,noreferrer');
+        if (!openedWin) {
+          window.location.href = RECEIPT_URL;
+        }
+        setTimeout(() => {
+          closeModal();
+          isVerifying = false;
+        }, 500);
+      }, 650);
+    } else {
+      pinSlots.forEach(slot => {
+        slot.classList.remove('active', 'success');
+        slot.classList.add('error');
+      });
+      if (pinDisplay) {
+        pinDisplay.classList.add('shake');
+        setTimeout(() => {
+          pinDisplay.classList.remove('shake');
+        }, 500);
+      }
+      showAlert('Incorrect 4-digit PIN. Please try again.', 'error');
+
+      setTimeout(() => {
+        clearPin();
+        isVerifying = false;
+      }, 700);
+    }
+  }
+
+  if (keypad) {
+    keypad.querySelectorAll('.keypad-btn[data-key]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        appendDigit(btn.dataset.key);
+      });
+    });
+  }
+
+  if (clearBtn) {
+    clearBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      deleteDigit();
+    });
+  }
+
+  if (unlockBtn) {
+    unlockBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      verifyPin();
+    });
+  }
+
+  if (hiddenInput) {
+    hiddenInput.addEventListener('input', () => {
+      const val = hiddenInput.value.replace(/\D/g, '').slice(0, 4);
+      enteredPin = val;
+      updatePinDisplay();
+      if (enteredPin.length === 4) {
+        setTimeout(verifyPin, 150);
+      }
+    });
+  }
+}
+
+/* ==========================================================================
+   STANDALONE ADMIN CONSOLE MODAL
+   ========================================================================== */
+function initAdminModal() {
+  const modal = document.getElementById('adminModal');
+  const footerLink = document.getElementById('footerAdminLink');
+  const closeBtn = document.getElementById('adminModalCloseBtn');
+
+  // Views
+  const authGate = document.getElementById('adminAuthGate');
+  const dashboardView = document.getElementById('adminDashboardView');
+  const gateForm = document.getElementById('adminGateForm');
+  const gatePinInput = document.getElementById('adminGatePinInput');
+  const gateAlert = document.getElementById('adminGateAlert');
+
+  // Tabs
+  const tabBtnImages = document.getElementById('adminTabBtnImages');
+  const tabBtnOperations = document.getElementById('adminTabBtnOperations');
+  const tabBtnReceiptPin = document.getElementById('adminTabBtnReceiptPin');
+  const tabBtnAdminPin = document.getElementById('adminTabBtnAdminPin');
+  const tabBtnAuditLogs = document.getElementById('adminTabBtnAuditLogs');
+  const imagesTabPanel = document.getElementById('adminImagesTabPanel');
+  const operationsTabPanel = document.getElementById('adminOperationsTabPanel');
+  const receiptPinTabPanel = document.getElementById('adminReceiptPinTabPanel');
+  const adminPinTabPanel = document.getElementById('adminAdminPinTabPanel');
+  const auditLogTabPanel = document.getElementById('adminAuditLogTabPanel');
+  const lockConsoleBtn = document.getElementById('adminLockConsoleBtn');
+
+  // Operational Status DOM References
+  const opStatActive = document.getElementById('adminOpStatActive');
+  const opStatPaused = document.getElementById('adminOpStatPaused');
+  const opEnableAllBtn = document.getElementById('adminOpEnableAllBtn');
+  const opResetBtn = document.getElementById('adminOpResetBtn');
+  const opSaveBtn = document.getElementById('adminOpSaveBtn');
+  const opAlertMsg = document.getElementById('adminOperationsAlertMsg');
+
+  // Audit Log DOM References
+  const auditFilterContainer = document.getElementById('auditFilterContainer');
+  const auditRefreshBtn = document.getElementById('adminRefreshAuditBtn');
+  const auditClearBtn = document.getElementById('adminClearAuditBtn');
+  const auditLogList = document.getElementById('adminAuditLogList');
+  const statTotal = document.getElementById('auditStatTotal');
+  const statSuccess = document.getElementById('auditStatSuccess');
+  const statFailed = document.getElementById('auditStatFailed');
+  const statSystem = document.getElementById('auditStatSystem');
+
+  // Forms - Receipt PIN
+  const receiptPinForm = document.getElementById('adminReceiptPinForm');
+  const receiptCurrentPinInput = document.getElementById('adminReceiptCurrentPin');
+  const receiptNewPinInput = document.getElementById('adminReceiptNewPin');
+  const receiptConfirmPinInput = document.getElementById('adminReceiptConfirmPin');
+  const receiptAlertMsg = document.getElementById('adminReceiptAlertMsg');
+  const receiptResetPinBtn = document.getElementById('adminReceiptResetPinBtn');
+
+  // Forms - Admin PIN
+  const adminPinForm = document.getElementById('adminAdminPinForm');
+  const adminCurrentPinInput = document.getElementById('adminAdminCurrentPin');
+  const adminNewPinInput = document.getElementById('adminAdminNewPin');
+  const adminConfirmPinInput = document.getElementById('adminAdminConfirmPin');
+  const adminAlertMsg = document.getElementById('adminAdminAlertMsg');
+  const adminResetPinBtn = document.getElementById('adminAdminResetPinBtn');
+
+  if (!modal) return;
+
+  // --- INACTIVITY AUTO-LOCK SYSTEM (5 Minutes) ---
+  const ADMIN_INACTIVITY_LIMIT_MS = 5 * 60 * 1000; // 5 minutes
+  let autoLockTimeoutId = null;
+  let autoLockCheckIntervalId = null;
+  let lastActivityTimestamp = Date.now();
+
+  function recordActivity() {
+    lastActivityTimestamp = Date.now();
+    try {
+      sessionStorage.setItem('jtex_admin_last_activity', lastActivityTimestamp.toString());
+    } catch (_) {}
+    resetAutoLockTimer();
+  }
+
+  function isSessionExpired() {
+    const storedLast = Number(sessionStorage.getItem('jtex_admin_last_activity') || '0');
+    const effectiveLast = Math.max(lastActivityTimestamp, storedLast);
+    return (Date.now() - effectiveLast) >= ADMIN_INACTIVITY_LIMIT_MS;
+  }
+
+  function triggerAutoLock(isSilent = false) {
+    clearAutoLockTimers();
+    sessionStorage.removeItem('jtex_admin_auth');
+    sessionStorage.removeItem('jtex_admin_last_activity');
+
+    showGate();
+
+    if (!isSilent) {
+      showGateAlert('Console automatically locked after 5 minutes of inactivity. Please re-enter your PIN.', 'warning');
+      if (typeof showToast === 'function') {
+        showToast('Console Auto-Locked', 'Admin session locked after 5 minutes of inactivity.', 'fa-solid fa-lock', 4000);
+      }
+
+      // Record timeout in security audit logs on server
+      try {
+        fetch('/api/admin/auto-lock-log', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        }).catch(() => {});
+      } catch (_) {}
+    }
+  }
+
+  function resetAutoLockTimer() {
+    if (autoLockTimeoutId) {
+      clearTimeout(autoLockTimeoutId);
+      autoLockTimeoutId = null;
+    }
+
+    if (sessionStorage.getItem('jtex_admin_auth') !== 'true') return;
+
+    autoLockTimeoutId = setTimeout(() => {
+      triggerAutoLock();
+    }, ADMIN_INACTIVITY_LIMIT_MS);
+  }
+
+  function clearAutoLockTimers() {
+    if (autoLockTimeoutId) {
+      clearTimeout(autoLockTimeoutId);
+      autoLockTimeoutId = null;
+    }
+    if (autoLockCheckIntervalId) {
+      clearInterval(autoLockCheckIntervalId);
+      autoLockCheckIntervalId = null;
+    }
+  }
+
+  function startAutoLockMonitoring() {
+    recordActivity();
+
+    // Check periodically every 10 seconds to catch background sleeping tabs or clock drift
+    if (autoLockCheckIntervalId) clearInterval(autoLockCheckIntervalId);
+    autoLockCheckIntervalId = setInterval(() => {
+      if (sessionStorage.getItem('jtex_admin_auth') === 'true') {
+        if (isSessionExpired()) {
+          triggerAutoLock();
+        }
+      } else {
+        clearAutoLockTimers();
+      }
+    }, 10000);
+  }
+
+  // Activity listeners for user interactions (clicks, keyboard, touches, mouse moves, inputs)
+  let activityThrottleTimer = null;
+  function handleUserInteraction() {
+    if (sessionStorage.getItem('jtex_admin_auth') !== 'true') return;
+    if (activityThrottleTimer) return;
+    activityThrottleTimer = setTimeout(() => {
+      activityThrottleTimer = null;
+    }, 1000); // Throttled to at most once per second
+    recordActivity();
+  }
+
+  ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll', 'input', 'click'].forEach(evt => {
+    window.addEventListener(evt, handleUserInteraction, { passive: true });
+  });
+
+  // Check expiration when user switches back to browser tab
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && sessionStorage.getItem('jtex_admin_auth') === 'true') {
+      if (isSessionExpired()) {
+        triggerAutoLock();
+      } else {
+        recordActivity();
+      }
+    }
+  });
+
+  window.addEventListener('focus', () => {
+    if (sessionStorage.getItem('jtex_admin_auth') === 'true') {
+      if (isSessionExpired()) {
+        triggerAutoLock();
+      } else {
+        recordActivity();
+      }
+    }
+  });
+
+  function openAdminModal() {
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+
+    if (sessionStorage.getItem('jtex_admin_auth') === 'true') {
+      if (isSessionExpired()) {
+        triggerAutoLock();
+      } else {
+        showDashboard();
+        recordActivity();
+      }
+    } else {
+      showGate();
+    }
+  }
+
+  function closeAdminModal() {
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  window.openAdminModal = openAdminModal;
+  window.closeAdminModal = closeAdminModal;
+
+  if (footerLink) {
+    footerLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      openAdminModal();
+    });
+  }
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', closeAdminModal);
+  }
+
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closeAdminModal();
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (!modal.classList.contains('open')) return;
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      closeAdminModal();
+    }
+  });
+
+  function showGate() {
+    if (authGate) authGate.style.display = 'flex';
+    if (dashboardView) dashboardView.style.display = 'none';
+    if (gateForm) gateForm.reset();
+    if (gateAlert) {
+      // Retain existing alert if warning/notice about timeout is present
+      if (!gateAlert.classList.contains('warning') && !gateAlert.classList.contains('notice')) {
+        gateAlert.style.display = 'none';
+        gateAlert.innerHTML = '';
+      }
+    }
+    setTimeout(() => {
+      if (gatePinInput) gatePinInput.focus();
+    }, 150);
+  }
+
+  function showDashboard() {
+    if (authGate) authGate.style.display = 'none';
+    if (dashboardView) dashboardView.style.display = 'flex';
+    switchTab('images');
+    startAutoLockMonitoring();
+  }
+
+  function showGateAlert(message, type = 'error') {
+    if (!gateAlert) return;
+    gateAlert.className = `admin-alert-msg ${type}`;
+    let icon = 'fa-solid fa-triangle-exclamation';
+    if (type === 'success') icon = 'fa-solid fa-circle-check';
+    if (type === 'warning' || type === 'notice') icon = 'fa-solid fa-clock-rotate-left';
+    gateAlert.innerHTML = `<i class="${icon}"></i> <span>${message}</span>`;
+    gateAlert.style.display = 'flex';
+  }
+
+  if (gateForm) {
+    gateForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const pin = (gatePinInput?.value || '').trim();
+      if (!pin) {
+        showGateAlert('Please enter your 4-digit Admin PIN.', 'error');
+        return;
+      }
+
+      let valid = false;
+      try {
+        const res = await fetch('/api/verify-admin-pin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ pin })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          valid = data.valid === true;
+        }
+      } catch (err) {
+        const localPin = localStorage.getItem('jtex_admin_pin') || '1965';
+        valid = pin === localPin;
+      }
+
+      if (valid) {
+        sessionStorage.setItem('jtex_admin_auth', 'true');
+        showDashboard();
+        if (typeof showToast === 'function') {
+          showToast('Admin Console Unlocked', 'Administrative session active (auto-locks after 5 min inactivity).', 'fa-solid fa-user-shield', 3000);
+        }
+      } else {
+        showGateAlert('Incorrect 4-digit Admin PIN.', 'error');
+        if (gatePinInput) {
+          gatePinInput.select();
+          gatePinInput.focus();
+        }
+      }
+    });
+  }
+
+  if (lockConsoleBtn) {
+    lockConsoleBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      clearAutoLockTimers();
+      sessionStorage.removeItem('jtex_admin_auth');
+      sessionStorage.removeItem('jtex_admin_last_activity');
+      showGate();
+      if (typeof showToast === 'function') {
+        showToast('Console Locked', 'Administrative session ended.', 'fa-solid fa-lock', 2500);
+      }
+    });
+  }
+
+  function switchTab(tabName) {
+    tabBtnImages?.classList.toggle('active', tabName === 'images');
+    tabBtnOperations?.classList.toggle('active', tabName === 'operations');
+    tabBtnReceiptPin?.classList.toggle('active', tabName === 'receiptPin');
+    tabBtnAdminPin?.classList.toggle('active', tabName === 'adminPin');
+    tabBtnAuditLogs?.classList.toggle('active', tabName === 'auditLogs');
+
+    if (imagesTabPanel) imagesTabPanel.style.display = tabName === 'images' ? 'flex' : 'none';
+    if (operationsTabPanel) operationsTabPanel.style.display = tabName === 'operations' ? 'flex' : 'none';
+    if (receiptPinTabPanel) receiptPinTabPanel.style.display = tabName === 'receiptPin' ? 'flex' : 'none';
+    if (adminPinTabPanel) adminPinTabPanel.style.display = tabName === 'adminPin' ? 'flex' : 'none';
+    if (auditLogTabPanel) auditLogTabPanel.style.display = tabName === 'auditLogs' ? 'flex' : 'none';
+
+    if (tabName === 'operations') {
+      applyServicesVisibility(currentServicesVisibility);
+    }
+    if (tabName === 'auditLogs') {
+      fetchAuditLogs();
+    }
+
+    if (opAlertMsg) {
+      opAlertMsg.style.display = 'none';
+      opAlertMsg.innerHTML = '';
+    }
+    if (receiptAlertMsg) {
+      receiptAlertMsg.style.display = 'none';
+      receiptAlertMsg.innerHTML = '';
+    }
+    if (adminAlertMsg) {
+      adminAlertMsg.style.display = 'none';
+      adminAlertMsg.innerHTML = '';
+    }
+  }
+
+  if (tabBtnImages) tabBtnImages.addEventListener('click', () => switchTab('images'));
+  if (tabBtnOperations) tabBtnOperations.addEventListener('click', () => switchTab('operations'));
+  if (tabBtnReceiptPin) tabBtnReceiptPin.addEventListener('click', () => switchTab('receiptPin'));
+  if (tabBtnAdminPin) tabBtnAdminPin.addEventListener('click', () => switchTab('adminPin'));
+  if (tabBtnAuditLogs) tabBtnAuditLogs.addEventListener('click', () => switchTab('auditLogs'));
+
+  // --- OPERATIONAL STATUS LOGIC ---
+  function showOpAlert(message, type = 'success') {
+    if (!opAlertMsg) return;
+    opAlertMsg.className = `admin-alert-msg ${type}`;
+    let icon = 'fa-solid fa-circle-check';
+    if (type === 'error') icon = 'fa-solid fa-triangle-exclamation';
+    if (type === 'warning') icon = 'fa-solid fa-circle-exclamation';
+    opAlertMsg.innerHTML = `<i class="${icon}"></i> <span>${message}</span>`;
+    opAlertMsg.style.display = 'flex';
+  }
+
+  async function saveServicesVisibilityToServer(visMap, isManualSave = false) {
+    recordActivity();
+    try {
+      const res = await fetch('/api/admin/update-services-visibility', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ servicesVisibility: visMap })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.servicesVisibility) {
+          applyServicesVisibility(data.servicesVisibility);
+          try {
+            localStorage.setItem('jtex_services_visibility', JSON.stringify(data.servicesVisibility));
+          } catch (_) {}
+
+          const activeCount = Object.values(data.servicesVisibility).filter(Boolean).length;
+          const pausedCount = Object.keys(data.servicesVisibility).length - activeCount;
+
+          if (isManualSave) {
+            showOpAlert(`Operational status published live: ${activeCount} active, ${pausedCount} hidden.`, 'success');
+          }
+          if (typeof showToast === 'function') {
+            showToast('Operational Status', `${activeCount} active, ${pausedCount} hidden on website.`, 'fa-solid fa-sliders', 3500);
+          }
+        } else {
+          if (isManualSave) showOpAlert(data.error || 'Failed to update operational status.', 'error');
+        }
+      } else {
+        const errData = await res.json().catch(() => ({}));
+        if (isManualSave) showOpAlert(errData.error || 'Server error updating operational status.', 'error');
+      }
+    } catch (err) {
+      console.warn('Network error updating services visibility:', err);
+      applyServicesVisibility(visMap);
+      try {
+        localStorage.setItem('jtex_services_visibility', JSON.stringify(visMap));
+      } catch (_) {}
+      if (isManualSave) {
+        showOpAlert('Updated locally (network unreachable).', 'warning');
+      }
+    }
+  }
+
+  // Toggle switch listeners
+  modal.querySelectorAll('.admin-op-checkbox').forEach(chk => {
+    chk.addEventListener('change', () => {
+      recordActivity();
+      const sKey = chk.dataset.service;
+      if (!sKey) return;
+      const isChecked = chk.checked;
+      const newMap = { ...currentServicesVisibility, [sKey]: isChecked };
+      applyServicesVisibility(newMap);
+      saveServicesVisibilityToServer(newMap, false);
+    });
+  });
+
+  // Enable All button
+  if (opEnableAllBtn) {
+    opEnableAllBtn.addEventListener('click', () => {
+      recordActivity();
+      const allOn = {};
+      Object.keys(DEFAULT_SERVICES_VISIBILITY).forEach(k => { allOn[k] = true; });
+      applyServicesVisibility(allOn);
+      saveServicesVisibilityToServer(allOn, true);
+    });
+  }
+
+  // Reset to Defaults button
+  if (opResetBtn) {
+    opResetBtn.addEventListener('click', async () => {
+      recordActivity();
+      const confirmed = window.confirm('Reset all service divisions to active default status?');
+      if (!confirmed) return;
+
+      try {
+        const res = await fetch('/api/admin/reset-services-visibility', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.servicesVisibility) {
+            applyServicesVisibility(data.servicesVisibility);
+            try {
+              localStorage.setItem('jtex_services_visibility', JSON.stringify(data.servicesVisibility));
+            } catch (_) {}
+            showOpAlert('All service divisions reset to active default.', 'success');
+            if (typeof showToast === 'function') {
+              showToast('Status Reset', 'All services active on public website.', 'fa-solid fa-rotate-left', 3500);
+            }
+          }
+        } else {
+          applyServicesVisibility(DEFAULT_SERVICES_VISIBILITY);
+          showOpAlert('Reset locally to active default.', 'warning');
+        }
+      } catch (err) {
+        applyServicesVisibility(DEFAULT_SERVICES_VISIBILITY);
+        showOpAlert('Reset locally to active default.', 'warning');
+      }
+    });
+  }
+
+  // Save Operational Status Button
+  if (opSaveBtn) {
+    opSaveBtn.addEventListener('click', () => {
+      recordActivity();
+      const curMap = {};
+      modal.querySelectorAll('.admin-op-checkbox').forEach(chk => {
+        const key = chk.dataset.service;
+        if (key) curMap[key] = chk.checked;
+      });
+      saveServicesVisibilityToServer(curMap, true);
+    });
+  }
+
+  modal.querySelectorAll('.admin-eye-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const targetId = btn.dataset.target;
+      const targetInput = document.getElementById(targetId);
+      if (!targetInput) return;
+      if (targetInput.type === 'password') {
+        targetInput.type = 'text';
+        btn.innerHTML = '<i class="fa-regular fa-eye-slash"></i>';
+      } else {
+        targetInput.type = 'password';
+        btn.innerHTML = '<i class="fa-regular fa-eye"></i>';
+      }
+    });
+  });
+
+  // Image upload handler
+  modal.querySelectorAll('.admin-file-picker').forEach(input => {
+    input.addEventListener('change', async (e) => {
+      const file = e.target.files?.[0];
+      const key = input.dataset.key;
+      if (!file || !key) return;
+
+      if (!file.type.startsWith('image/')) {
+        alert('Please choose a valid image file (JPG, PNG, WEBP).');
+        return;
+      }
+
+      const labelBtn = input.closest('.admin-upload-btn');
+      const originalLabelHtml = labelBtn ? labelBtn.innerHTML : '';
+      if (labelBtn) {
+        labelBtn.classList.add('uploading');
+        labelBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Uploading...';
+      }
+
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        const dataUrl = event.target?.result;
+        try {
+          const res = await fetch('/api/admin/update-image', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ key, dataUrl })
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            if (data.success && data.url) {
+              const websiteImg = document.querySelector(IMAGE_TARGET_MAP[key]);
+              if (websiteImg) {
+                websiteImg.src = data.url;
+              }
+              const thumbImg = document.getElementById(`adminThumb_${key}`);
+              if (thumbImg) {
+                thumbImg.src = data.url;
+              }
+
+              try {
+                const cached = JSON.parse(localStorage.getItem('jtex_site_images') || '{}');
+                cached[key] = data.url;
+                localStorage.setItem('jtex_site_images', JSON.stringify(cached));
+              } catch (e) { /* ignore */ }
+
+              if (typeof showToast === 'function') {
+                showToast('Image Updated', 'Image was saved to server and updated on website.', 'fa-solid fa-circle-check', 4000);
+              }
+            }
+          } else {
+            const errData = await res.json().catch(() => ({}));
+            alert(errData.error || 'Failed to update image on server.');
+          }
+        } catch (err) {
+          alert('Network error while uploading image.');
+        } finally {
+          if (labelBtn) {
+            labelBtn.classList.remove('uploading');
+            labelBtn.innerHTML = originalLabelHtml;
+            const reInput = labelBtn.querySelector('.admin-file-picker');
+            if (reInput) reInput.value = '';
+          }
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  });
+
+  // Reset image handler
+  modal.querySelectorAll('.admin-reset-thumb-btn').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const key = btn.dataset.key;
+      if (!key) return;
+
+      const confirmed = window.confirm('Reset this image back to the factory system default?');
+      if (!confirmed) return;
+
+      try {
+        const res = await fetch('/api/admin/reset-image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ key })
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.url) {
+            const websiteImg = document.querySelector(IMAGE_TARGET_MAP[key]);
+            if (websiteImg) {
+              websiteImg.src = data.url;
+            }
+            const thumbImg = document.getElementById(`adminThumb_${key}`);
+            if (thumbImg) {
+              thumbImg.src = data.url;
+            }
+
+            try {
+              const cached = JSON.parse(localStorage.getItem('jtex_site_images') || '{}');
+              cached[key] = data.url;
+              localStorage.setItem('jtex_site_images', JSON.stringify(cached));
+            } catch (e) { /* ignore */ }
+
+            if (typeof showToast === 'function') {
+              showToast('Image Reset', 'Image restored to system default.', 'fa-solid fa-rotate-left', 3500);
+            }
+          }
+        }
+      } catch (err) {
+        alert('Network error resetting image.');
+      }
+    });
+  });
+
+  // --- RECEIPT PIN LOGIC ---
+  function showReceiptPinAlert(message, type = 'error') {
+    if (!receiptAlertMsg) return;
+    receiptAlertMsg.className = `admin-alert-msg ${type}`;
+    const icon = type === 'success' ? 'fa-solid fa-circle-check' : 'fa-solid fa-triangle-exclamation';
+    receiptAlertMsg.innerHTML = `<i class="${icon}"></i> <span>${message}</span>`;
+    receiptAlertMsg.style.display = 'flex';
+  }
+
+  if (receiptPinForm) {
+    receiptPinForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const currentPin = (receiptCurrentPinInput?.value || '').trim();
+      const newPin = (receiptNewPinInput?.value || '').trim();
+      const confirmPin = (receiptConfirmPinInput?.value || '').trim();
+
+      if (!currentPin) {
+        showReceiptPinAlert('Please enter current Receipt PIN.', 'error');
+        receiptCurrentPinInput?.focus();
+        return;
+      }
+
+      if (!/^\d{4}$/.test(newPin)) {
+        showReceiptPinAlert('New Receipt PIN must be exactly 4 numeric digits.', 'error');
+        receiptNewPinInput?.focus();
+        return;
+      }
+
+      if (newPin !== confirmPin) {
+        showReceiptPinAlert('New PIN and Confirm PIN do not match.', 'error');
+        receiptConfirmPinInput?.focus();
+        return;
+      }
+
+      if (newPin === currentPin) {
+        showReceiptPinAlert('New PIN cannot be identical to current PIN.', 'error');
+        receiptNewPinInput?.focus();
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/admin/update-receipt-pin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ currentPin, newPin })
+        });
+
+        const data = await res.json();
+        if (res.ok && data.success) {
+          localStorage.setItem('jtex_receipt_pin', newPin);
+          showReceiptPinAlert('Receipt PIN updated successfully.', 'success');
+          receiptPinForm.reset();
+
+          if (typeof showToast === 'function') {
+            showToast('Receipt PIN Updated', 'Clients must now use the new 4-digit PIN for receipts.', 'fa-solid fa-receipt', 4000);
+          }
+        } else {
+          showReceiptPinAlert(data.error || 'Failed to update Receipt PIN.', 'error');
+        }
+      } catch (err) {
+        showReceiptPinAlert('Network error while updating Receipt PIN.', 'error');
+      }
+    });
+  }
+
+  if (receiptResetPinBtn) {
+    receiptResetPinBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const confirmed = window.confirm('Reset Receipt PIN back to default?');
+      if (!confirmed) return;
+
+      try {
+        const res = await fetch('/api/admin/reset-receipt-pin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+
+        const data = await res.json();
+        if (res.ok && data.success) {
+          localStorage.setItem('jtex_receipt_pin', '1965');
+          if (receiptPinForm) receiptPinForm.reset();
+          showReceiptPinAlert('Receipt PIN has been reset to default.', 'success');
+
+          if (typeof showToast === 'function') {
+            showToast('Receipt PIN Reset', 'Receipt PIN reverted to default.', 'fa-solid fa-rotate-left', 3500);
+          }
+        } else {
+          showReceiptPinAlert(data.error || 'Failed to reset Receipt PIN.', 'error');
+        }
+      } catch (err) {
+        showReceiptPinAlert('Network error while resetting Receipt PIN.', 'error');
+      }
+    });
+  }
+
+  // --- ADMIN PIN LOGIC ---
+  function showAdminPinAlert(message, type = 'error') {
+    if (!adminAlertMsg) return;
+    adminAlertMsg.className = `admin-alert-msg ${type}`;
+    const icon = type === 'success' ? 'fa-solid fa-circle-check' : 'fa-solid fa-triangle-exclamation';
+    adminAlertMsg.innerHTML = `<i class="${icon}"></i> <span>${message}</span>`;
+    adminAlertMsg.style.display = 'flex';
+  }
+
+  if (adminPinForm) {
+    adminPinForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const currentPin = (adminCurrentPinInput?.value || '').trim();
+      const newPin = (adminNewPinInput?.value || '').trim();
+      const confirmPin = (adminConfirmPinInput?.value || '').trim();
+
+      if (!currentPin) {
+        showAdminPinAlert('Please enter current Admin PIN.', 'error');
+        adminCurrentPinInput?.focus();
+        return;
+      }
+
+      if (!/^\d{4}$/.test(newPin)) {
+        showAdminPinAlert('New Admin PIN must be exactly 4 numeric digits.', 'error');
+        adminNewPinInput?.focus();
+        return;
+      }
+
+      if (newPin !== confirmPin) {
+        showAdminPinAlert('New PIN and Confirm PIN do not match.', 'error');
+        adminConfirmPinInput?.focus();
+        return;
+      }
+
+      if (newPin === currentPin) {
+        showAdminPinAlert('New PIN cannot be identical to current PIN.', 'error');
+        adminNewPinInput?.focus();
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/admin/update-admin-pin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ currentPin, newPin })
+        });
+
+        const data = await res.json();
+        if (res.ok && data.success) {
+          localStorage.setItem('jtex_admin_pin', newPin);
+          showAdminPinAlert('Admin PIN updated successfully.', 'success');
+          adminPinForm.reset();
+
+          if (typeof showToast === 'function') {
+            showToast('Admin PIN Updated', 'Master Admin PIN has been securely updated.', 'fa-solid fa-user-shield', 4000);
+          }
+        } else {
+          showAdminPinAlert(data.error || 'Failed to update Admin PIN.', 'error');
+        }
+      } catch (err) {
+        showAdminPinAlert('Network error while updating Admin PIN.', 'error');
+      }
+    });
+  }
+
+  if (adminResetPinBtn) {
+    adminResetPinBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const confirmed = window.confirm('Reset Admin PIN back to default?');
+      if (!confirmed) return;
+
+      try {
+        const res = await fetch('/api/admin/reset-admin-pin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+
+        const data = await res.json();
+        if (res.ok && data.success) {
+          localStorage.setItem('jtex_admin_pin', '1965');
+          if (adminPinForm) adminPinForm.reset();
+          showAdminPinAlert('Admin PIN has been reset to default.', 'success');
+
+          if (typeof showToast === 'function') {
+            showToast('Admin PIN Reset', 'Admin PIN reverted to default.', 'fa-solid fa-rotate-left', 3500);
+          }
+        } else {
+          showAdminPinAlert(data.error || 'Failed to reset Admin PIN.', 'error');
+        }
+      } catch (err) {
+        showAdminPinAlert('Network error while resetting Admin PIN.', 'error');
+      }
+    });
+  }
+
+  // --- SECURITY AUDIT LOG CONTROLLER ---
+  let currentAuditFilter = 'all';
+  let cachedAuditLogs = [];
+
+  function formatTimeAgo(isoDate) {
+    try {
+      const date = new Date(isoDate);
+      if (isNaN(date.getTime())) return '';
+      const now = new Date();
+      const diffSec = Math.floor((now.getTime() - date.getTime()) / 1000);
+      if (diffSec < 5) return 'just now';
+      if (diffSec < 60) return `${diffSec}s ago`;
+      const diffMin = Math.floor(diffSec / 60);
+      if (diffMin < 60) return `${diffMin}m ago`;
+      const diffHours = Math.floor(diffMin / 60);
+      if (diffHours < 24) return `${diffHours}h ago`;
+      const diffDays = Math.floor(diffHours / 24);
+      return `${diffDays}d ago`;
+    } catch {
+      return '';
+    }
+  }
+
+  function formatDateTime(isoDate) {
+    try {
+      const date = new Date(isoDate);
+      if (isNaN(date.getTime())) return isoDate;
+      return date.toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+      });
+    } catch {
+      return isoDate;
+    }
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function updateAuditStats(logs) {
+    const total = logs.length;
+    const success = logs.filter(l => l.status === 'SUCCESS').length;
+    const failed = logs.filter(l => l.status === 'FAILED').length;
+    const system = logs.filter(l => l.status === 'SYSTEM' || (l.status !== 'SUCCESS' && l.status !== 'FAILED')).length;
+
+    if (statTotal) statTotal.textContent = total;
+    if (statSuccess) statSuccess.textContent = success;
+    if (statFailed) statFailed.textContent = failed;
+    if (statSystem) statSystem.textContent = system;
+  }
+
+  function renderAuditLogs() {
+    if (!auditLogList) return;
+
+    let filtered = cachedAuditLogs;
+    if (currentAuditFilter === 'receipt') {
+      filtered = cachedAuditLogs.filter(item => (item.portal || '').toLowerCase().includes('receipt'));
+    } else if (currentAuditFilter === 'admin') {
+      filtered = cachedAuditLogs.filter(item => (item.portal || '').toLowerCase().includes('admin'));
+    } else if (currentAuditFilter === 'failed') {
+      filtered = cachedAuditLogs.filter(item => item.status === 'FAILED');
+    }
+
+    if (!filtered || filtered.length === 0) {
+      const emptyMsg = currentAuditFilter === 'failed' 
+        ? 'No failed login attempts detected. All authentications are clean.'
+        : 'No audit records matching this filter.';
+      auditLogList.innerHTML = `
+        <div class="admin-audit-empty">
+          <i class="fa-solid fa-shield-halved"></i>
+          <p>${emptyMsg}</p>
+        </div>
+      `;
+      return;
+    }
+
+    let html = '';
+    filtered.forEach(log => {
+      const isFailed = log.status === 'FAILED';
+      const isSuccess = log.status === 'SUCCESS';
+      const cardClass = isFailed ? 'is-failed' : (isSuccess ? 'is-success' : 'is-system');
+
+      let badgeHtml = '';
+      if (isSuccess) {
+        badgeHtml = `<span class="audit-badge success"><i class="fa-solid fa-circle-check"></i> SUCCESS</span>`;
+      } else if (isFailed) {
+        badgeHtml = `<span class="audit-badge failed"><i class="fa-solid fa-triangle-exclamation"></i> FAILED</span>`;
+      } else {
+        badgeHtml = `<span class="audit-badge system"><i class="fa-solid fa-sliders"></i> SYSTEM</span>`;
+      }
+
+      const portalIcon = (log.portal || '').toLowerCase().includes('receipt') ? 'fa-receipt' : 'fa-user-shield';
+      const formattedDate = formatDateTime(log.timestamp);
+      const relativeTime = formatTimeAgo(log.timestamp);
+
+      html += `
+        <div class="admin-audit-card ${cardClass}">
+          <div class="audit-card-top">
+            <div class="audit-tags-group">
+              ${badgeHtml}
+              <span class="audit-portal-tag">
+                <i class="fa-solid ${portalIcon}"></i> ${escapeHtml(log.portal || 'Security Portal')}
+              </span>
+            </div>
+            <span class="audit-time-text" title="${escapeHtml(log.timestamp || '')}">
+              <i class="fa-regular fa-clock"></i> ${escapeHtml(formattedDate)} ${relativeTime ? `&bull; ${relativeTime}` : ''}
+            </span>
+          </div>
+
+          <p class="audit-card-msg">${escapeHtml(log.message || log.action || 'Authentication attempt recorded')}</p>
+
+          <div class="audit-card-footer">
+            <span class="audit-footer-item">
+              <i class="fa-solid fa-network-wired"></i> IP: <code>${escapeHtml(log.ip || '127.0.0.1')}</code>
+            </span>
+            <span class="audit-footer-item">
+              <i class="fa-solid fa-laptop-code"></i> ${escapeHtml(log.userAgent || 'Web Client')}
+            </span>
+          </div>
+        </div>
+      `;
+    });
+
+    auditLogList.innerHTML = html;
+  }
+
+  async function fetchAuditLogs(showNotification = false) {
+    if (auditRefreshBtn) {
+      const icon = auditRefreshBtn.querySelector('i');
+      if (icon) icon.classList.add('fa-spin');
+    }
+
+    try {
+      const res = await fetch('/api/admin/audit-logs');
+      if (res.ok) {
+        const data = await res.json();
+        cachedAuditLogs = Array.isArray(data.logs) ? data.logs : [];
+        updateAuditStats(cachedAuditLogs);
+        renderAuditLogs();
+        if (showNotification && typeof showToast === 'function') {
+          showToast('Audit Log Synced', `Updated with ${cachedAuditLogs.length} authentication entries.`, 'fa-solid fa-shield-check', 2500);
+        }
+      } else {
+        if (auditLogList) {
+          auditLogList.innerHTML = `
+            <div class="admin-audit-empty">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+              <p>Unable to retrieve audit logs from server.</p>
+            </div>
+          `;
+        }
+      }
+    } catch (err) {
+      console.error('Error fetching audit logs:', err);
+      if (auditLogList) {
+        auditLogList.innerHTML = `
+          <div class="admin-audit-empty">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <p>Network connection error while retrieving audit logs.</p>
+          </div>
+        `;
+      }
+    } finally {
+      if (auditRefreshBtn) {
+        const icon = auditRefreshBtn.querySelector('i');
+        if (icon) icon.classList.remove('fa-spin');
+      }
+    }
+  }
+
+  if (auditFilterContainer) {
+    auditFilterContainer.addEventListener('click', (e) => {
+      const btn = e.target.closest('.audit-filter-btn');
+      if (!btn) return;
+      e.preventDefault();
+      auditFilterContainer.querySelectorAll('.audit-filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentAuditFilter = btn.dataset.filter || 'all';
+      renderAuditLogs();
+    });
+  }
+
+  if (auditRefreshBtn) {
+    auditRefreshBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      fetchAuditLogs(true);
+    });
+  }
+
+  if (auditClearBtn) {
+    auditClearBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const confirmed = window.confirm('Are you sure you want to clear the security audit log history?');
+      if (!confirmed) return;
+
+      try {
+        const res = await fetch('/api/admin/clear-audit-logs', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        if (res.ok) {
+          await fetchAuditLogs();
+          if (typeof showToast === 'function') {
+            showToast('Audit Log Cleared', 'Security ledger history has been cleared.', 'fa-solid fa-trash-can', 3000);
+          }
+        } else {
+          alert('Could not clear audit logs.');
+        }
+      } catch (err) {
+        alert('Network error while clearing logs.');
+      }
+    });
+  }
+}
+
 /* =========================
    App Initialization
    ========================= */
@@ -2847,6 +4313,9 @@ function initApp() {
   initPortHarcourtWeather();
   initHeroCinematicCanvas();
   initCompanyProfileDownload();
+  initReceiptPinModal();
+  loadSiteConfig();
+  initAdminModal();
 
   // Footer wave
   try {

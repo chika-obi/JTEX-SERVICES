@@ -1,0 +1,20 @@
+{
+  "receiptPin": "1965",
+  "adminPin": "1965",
+  "images": {
+    "hero": "images/md.jpeg",
+    "md": "images/MDCEO.jpeg",
+    "gm": "images/IMG-20260907-WA0014.jpg",
+    "it": "images/IT2.jpeg",
+    "procurement": "images/PROCUREMENT.jpeg"
+  },
+  "servicesVisibility": {
+    "drilling-chemicals": true,
+    "procurement": true,
+    "environmental": true,
+    "logistics": true,
+    "security": true,
+    "contracts": true
+  },
+  "updatedAt": "2026-09-09T14:50:04.167Z"
+}

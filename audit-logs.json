@@ -1,0 +1,112 @@
+[
+  {
+    "id": "log_1788965404167_ez0d",
+    "timestamp": "2026-09-09T14:50:04.167Z",
+    "portal": "Admin Console",
+    "action": "Operational Status",
+    "status": "SYSTEM",
+    "message": "Reset all service divisions operational visibility to default (all active)",
+    "ip": "127.0.0.1",
+    "userAgent": "curl/7.88.1"
+  },
+  {
+    "id": "log_1788965397094_mj54",
+    "timestamp": "2026-09-09T14:49:57.094Z",
+    "portal": "Admin Console",
+    "action": "Operational Status",
+    "status": "SUCCESS",
+    "message": "Updated service operational visibility: 5 active, 1 hidden",
+    "ip": "127.0.0.1",
+    "userAgent": "curl/7.88.1"
+  },
+  {
+    "id": "log_1788964709003_3fdw",
+    "timestamp": "2026-09-09T14:38:29.003Z",
+    "portal": "Admin Console",
+    "action": "Session Timeout",
+    "status": "SYSTEM",
+    "message": "Admin Console auto-locked due to 5 minutes of inactivity",
+    "ip": "127.0.0.1",
+    "userAgent": "curl/7.88.1"
+  },
+  {
+    "id": "log_1788964570111_6k8u",
+    "timestamp": "2026-09-09T14:36:10.111Z",
+    "portal": "Admin Console",
+    "action": "Factory Reset",
+    "status": "SYSTEM",
+    "message": "Admin PIN reset to factory default",
+    "ip": "127.0.0.1",
+    "userAgent": "curl/7.88.1"
+  },
+  {
+    "id": "log_1788964567724_5abv",
+    "timestamp": "2026-09-09T14:36:07.724Z",
+    "portal": "Receipt Portal",
+    "action": "Factory Reset",
+    "status": "SYSTEM",
+    "message": "Receipt PIN reset to factory default",
+    "ip": "127.0.0.1",
+    "userAgent": "curl/7.88.1"
+  },
+  {
+    "id": "log_1788964517127_o2lj",
+    "timestamp": "2026-09-09T14:35:17.127Z",
+    "portal": "Admin Console",
+    "action": "Login Attempt",
+    "status": "SUCCESS",
+    "message": "Administrator session unlocked successfully",
+    "ip": "105.116.11.242",
+    "userAgent": "Mobile Client (Android)"
+  },
+  {
+    "id": "log_1788964364008_a6m3",
+    "timestamp": "2026-09-09T14:32:44.008Z",
+    "portal": "Admin Console",
+    "action": "Login Attempt",
+    "status": "SUCCESS",
+    "message": "Administrator session unlocked successfully",
+    "ip": "127.0.0.1",
+    "userAgent": "curl/7.88.1"
+  },
+  {
+    "id": "log_1788964355004_mqtx",
+    "timestamp": "2026-09-09T14:32:35.004Z",
+    "portal": "Receipt Portal",
+    "action": "Login Attempt",
+    "status": "FAILED",
+    "message": "Incorrect 4-digit Receipt PIN entered",
+    "ip": "127.0.0.1",
+    "userAgent": "curl/7.88.1"
+  },
+  {
+    "id": "log_seed_01",
+    "timestamp": "2026-09-09T12:02:31.205Z",
+    "portal": "Receipt Portal",
+    "action": "Login Attempt",
+    "status": "SUCCESS",
+    "message": "Client unlocked Receipt Database with valid PIN",
+    "ip": "127.0.0.1",
+    "userAgent": "Desktop Browser (Chrome / Windows)"
+  },
+  {
+    "id": "log_seed_02",
+    "timestamp": "2026-09-09T13:20:31.205Z",
+    "portal": "Receipt Portal",
+    "action": "Login Attempt",
+    "status": "FAILED",
+    "message": "Invalid 4-digit PIN entered (attempt rejected)",
+    "ip": "102.89.41.22",
+    "userAgent": "Mobile Client (Safari / iOS)"
+  },
+  {
+    "id": "log_seed_03",
+    "timestamp": "2026-09-09T14:02:31.205Z",
+    "portal": "Admin Console",
+    "action": "Login Attempt",
+    "status": "SUCCESS",
+    "message": "Administrator authenticated into console",
+    "ip": "127.0.0.1",
+    "userAgent": "Desktop Browser (Chrome / Windows)"
+  }
+]
