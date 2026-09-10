@@ -3243,6 +3243,8 @@ function initAdminModal() {
   const adminPinTabPanel = document.getElementById('adminAdminPinTabPanel');
   const auditLogTabPanel = document.getElementById('adminAuditLogTabPanel');
   const lockConsoleBtn = document.getElementById('adminLockConsoleBtn');
+  const adminLogoutBtn = document.getElementById('adminLogoutBtn');
+  const adminHeaderLogoutBtn = document.getElementById('adminHeaderLogoutBtn');
 
   // Operational Status DOM References
   const opStatActive = document.getElementById('adminOpStatActive');
@@ -3453,6 +3455,7 @@ function initAdminModal() {
   function showGate() {
     if (authGate) authGate.style.display = 'flex';
     if (dashboardView) dashboardView.style.display = 'none';
+    if (adminHeaderLogoutBtn) adminHeaderLogoutBtn.style.display = 'none';
     if (gateForm) gateForm.reset();
     if (gateAlert) {
       // Retain existing alert if warning/notice about timeout is present
@@ -3469,6 +3472,7 @@ function initAdminModal() {
   function showDashboard() {
     if (authGate) authGate.style.display = 'none';
     if (dashboardView) dashboardView.style.display = 'flex';
+    if (adminHeaderLogoutBtn) adminHeaderLogoutBtn.style.display = 'inline-flex';
     switchTab('images');
     startAutoLockMonitoring();
   }
@@ -3524,16 +3528,37 @@ function initAdminModal() {
     });
   }
 
-  if (lockConsoleBtn) {
+  function performAdminLogout(andCloseModal = true) {
+    clearAutoLockTimers();
+    sessionStorage.removeItem('jtex_admin_auth');
+    sessionStorage.removeItem('jtex_admin_last_activity');
+    showGate();
+    if (andCloseModal) {
+      closeAdminModal();
+    }
+    if (typeof showToast === 'function') {
+      showToast('Logged Out', 'You have securely logged out of the Admin Console.', 'fa-solid fa-right-from-bracket', 3000);
+    }
+  }
+
+  if (adminHeaderLogoutBtn) {
+    adminHeaderLogoutBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      performAdminLogout(true);
+    });
+  }
+
+  if (adminLogoutBtn) {
+    adminLogoutBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      performAdminLogout(true);
+    });
+  }
+
+  if (lockConsoleBtn && lockConsoleBtn !== adminLogoutBtn) {
     lockConsoleBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      clearAutoLockTimers();
-      sessionStorage.removeItem('jtex_admin_auth');
-      sessionStorage.removeItem('jtex_admin_last_activity');
-      showGate();
-      if (typeof showToast === 'function') {
-        showToast('Console Locked', 'Administrative session ended.', 'fa-solid fa-lock', 2500);
-      }
+      performAdminLogout(true);
     });
   }
 

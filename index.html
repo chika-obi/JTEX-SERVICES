@@ -1571,9 +1571,14 @@
           <h2 id="adminModalTitle">JTEX Administration Console</h2>
           <p>Site Assets &amp; Security Configuration Manager</p>
         </div>
-        <button type="button" class="receipt-close-btn" id="adminModalCloseBtn" aria-label="Close Admin Modal" title="Close (Esc)">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
+        <div class="admin-header-actions">
+          <button type="button" class="admin-header-logout-btn" id="adminHeaderLogoutBtn" style="display: none;" title="Log out of Admin Console">
+            <i class="fa-solid fa-right-from-bracket"></i> Log Out
+          </button>
+          <button type="button" class="receipt-close-btn" id="adminModalCloseBtn" aria-label="Close Admin Modal" title="Close (Esc)">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
       </div>
 
       <!-- STATE A: ADMIN AUTHENTICATION GATE -->
@@ -1641,8 +1646,8 @@
               <i class="fa-solid fa-shield-halved"></i> <span>Audit Log</span>
             </button>
           </div>
-          <button type="button" class="admin-tab-lock-btn" id="adminLockConsoleBtn" title="Lock and exit console">
-            <i class="fa-solid fa-lock"></i> Lock Console
+          <button type="button" class="admin-tab-logout-btn" id="adminLogoutBtn" title="Log out and secure Admin Console">
+            <i class="fa-solid fa-right-from-bracket"></i> <span>Log Out</span>
           </button>
         </div>
 
