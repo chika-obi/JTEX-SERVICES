@@ -1,5 +1,65 @@
 [
   {
+    "id": "log_1789039603749_7s0q",
+    "timestamp": "2026-09-10T11:26:43.749Z",
+    "portal": "Admin Console",
+    "action": "Login Attempt",
+    "status": "SUCCESS",
+    "message": "Administrator session unlocked successfully",
+    "ip": "127.0.0.1",
+    "userAgent": "curl/7.88.1"
+  },
+  {
+    "id": "log_1789039597145_c6ae",
+    "timestamp": "2026-09-10T11:26:37.145Z",
+    "portal": "Receipt Portal",
+    "action": "Login Attempt",
+    "status": "SUCCESS",
+    "message": "Authorized access to Receipt Database granted",
+    "ip": "127.0.0.1",
+    "userAgent": "curl/7.88.1"
+  },
+  {
+    "id": "log_1789039408965_a5xe",
+    "timestamp": "2026-09-10T11:23:28.965Z",
+    "portal": "Receipt Portal",
+    "action": "Login Attempt",
+    "status": "FAILED",
+    "message": "Incorrect 4-digit Receipt PIN entered",
+    "ip": "105.113.41.55",
+    "userAgent": "Desktop Workstation"
+  },
+  {
+    "id": "log_1789039394464_b4j9",
+    "timestamp": "2026-09-10T11:23:14.464Z",
+    "portal": "Receipt Portal",
+    "action": "Login Attempt",
+    "status": "FAILED",
+    "message": "Incorrect 4-digit Receipt PIN entered",
+    "ip": "105.113.41.55",
+    "userAgent": "Desktop Workstation"
+  },
+  {
+    "id": "log_1789039381286_m3m6",
+    "timestamp": "2026-09-10T11:23:01.286Z",
+    "portal": "Receipt Portal",
+    "action": "Login Attempt",
+    "status": "FAILED",
+    "message": "Incorrect 4-digit Receipt PIN entered",
+    "ip": "105.113.41.55",
+    "userAgent": "Desktop Workstation"
+  },
+  {
+    "id": "log_1789039372345_5bb1",
+    "timestamp": "2026-09-10T11:22:52.345Z",
+    "portal": "Receipt Portal",
+    "action": "Login Attempt",
+    "status": "FAILED",
+    "message": "Incorrect 4-digit Receipt PIN entered",
+    "ip": "105.113.41.55",
+    "userAgent": "Desktop Workstation"
+  },
+  {
     "id": "log_1789037121217_tzek",
     "timestamp": "2026-09-10T10:45:21.217Z",
     "portal": "Admin Console",
