@@ -2802,49 +2802,6 @@ function openPrintableCapabilitiesFallback() {
 }
 
 /* ==========================================================================
-   Secondary Footer Wave Canvas Helper
-   ========================================================================== */
-function initWaveCanvas(canvasId, options = {}) {
-  const canvas = document.getElementById(canvasId);
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return;
-
-  const layers = options.layers || [
-    { amp: 10, freq: 0.015, speed: 0.22, color: 'rgba(0,179,179,0.10)' }
-  ];
-
-  let width = (canvas.width = canvas.offsetWidth || 300);
-  let height = (canvas.height = canvas.offsetHeight || 60);
-  let time = 0;
-
-  function resize() {
-    width = canvas.width = canvas.offsetWidth || 300;
-    height = canvas.height = canvas.offsetHeight || 60;
-  }
-  window.addEventListener('resize', resize, { passive: true });
-
-  function renderWave() {
-    ctx.clearRect(0, 0, width, height);
-    layers.forEach(layer => {
-      ctx.beginPath();
-      ctx.moveTo(0, height);
-      for (let x = 0; x <= width; x += 10) {
-        const y = height / 2 + Math.sin(x * layer.freq + time * layer.speed) * layer.amp;
-        ctx.lineTo(x, y);
-      }
-      ctx.lineTo(width, height);
-      ctx.closePath();
-      ctx.fillStyle = layer.color;
-      ctx.fill();
-    });
-    time += 0.04;
-    requestAnimationFrame(renderWave);
-  }
-  renderWave();
-}
-
-/* ==========================================================================
    DYNAMIC SITE CONFIG, PERSISTENT IMAGES & OPERATIONAL SERVICE STATUS
    ========================================================================== */
 const DEFAULT_SITE_IMAGES = {
