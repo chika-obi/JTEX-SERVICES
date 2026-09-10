@@ -1,6 +1,6 @@
 {
-  "receiptPin": "1965",
-  "adminPin": "1965",
+  "receiptPinHash": "c096f70e6f2dad13dbfb5c7717393bb2c56fbf1a4650695b465e15c777f4af58",
+  "adminPinHash": "c096f70e6f2dad13dbfb5c7717393bb2c56fbf1a4650695b465e15c777f4af58",
   "images": {
     "hero": "images/md.jpeg",
     "md": "images/MDCEO.jpeg",
@@ -16,5 +16,5 @@
     "security": true,
     "contracts": true
   },
-  "updatedAt": "2026-09-09T14:50:04.167Z"
+  "updatedAt": "2026-09-10T10:44:58.037Z"
 }

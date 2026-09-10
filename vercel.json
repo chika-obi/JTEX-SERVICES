@@ -1,8 +1,11 @@
 {
   "version": 2,
-  "outputDirectory": ".",
   "cleanUrls": true,
   "trailingSlash": false,
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/index.js" },
+    { "source": "/images/uploads/(.*)", "destination": "/api/index.js" }
+  ],
   "headers": [
     {
       "source": "/(.*)",
