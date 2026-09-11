@@ -1,5 +1,25 @@
 [
   {
+    "id": "log_1789117696322_ike8",
+    "timestamp": "2026-09-11T09:08:16.322Z",
+    "portal": "Admin Console",
+    "action": "Image Update",
+    "status": "SUCCESS",
+    "message": "Updated image for MD section (md.jpg)",
+    "ip": "105.116.11.99",
+    "userAgent": "Desktop Workstation"
+  },
+  {
+    "id": "log_1789117679682_jwfr",
+    "timestamp": "2026-09-11T09:07:59.683Z",
+    "portal": "Admin Console",
+    "action": "Login Attempt",
+    "status": "SUCCESS",
+    "message": "Administrator session unlocked successfully",
+    "ip": "105.116.11.99",
+    "userAgent": "Desktop Workstation"
+  },
+  {
     "id": "log_1789039603749_7s0q",
     "timestamp": "2026-09-10T11:26:43.749Z",
     "portal": "Admin Console",
