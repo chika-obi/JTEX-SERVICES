@@ -5,7 +5,7 @@
     "hero": "images/md.jpeg",
     "md": "images/uploads/md.jpg?v=1789117696322",
     "gm": "images/uploads/gm.png?v=1789117725764",
-    "it": "images/IT2.jpeg",
+    "it": "images/uploads/it.png?v=1789117748543",
     "procurement": "images/PROCUREMENT.jpeg"
   },
   "servicesVisibility": {
@@ -16,5 +16,5 @@
     "security": true,
     "contracts": true
   },
-  "updatedAt": "2026-09-11T09:08:45.764Z"
+  "updatedAt": "2026-09-11T09:09:08.543Z"
 }
