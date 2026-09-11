@@ -1,5 +1,15 @@
 [
   {
+    "id": "log_1789117725764_zutb",
+    "timestamp": "2026-09-11T09:08:45.764Z",
+    "portal": "Admin Console",
+    "action": "Image Update",
+    "status": "SUCCESS",
+    "message": "Updated image for GM section (gm.png)",
+    "ip": "105.116.11.99",
+    "userAgent": "Desktop Workstation"
+  },
+  {
     "id": "log_1789117696322_ike8",
     "timestamp": "2026-09-11T09:08:16.322Z",
     "portal": "Admin Console",
