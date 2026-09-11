@@ -1,5 +1,45 @@
 [
   {
+    "id": "log_1789119856063_3xl1",
+    "timestamp": "2026-09-11T09:44:16.063Z",
+    "portal": "Admin Console",
+    "action": "Image Update",
+    "status": "SUCCESS",
+    "message": "Updated image for PROCUREMENT section (procurement.png)",
+    "ip": "105.116.11.99",
+    "userAgent": "Desktop Workstation"
+  },
+  {
+    "id": "log_1789119755037_mnzo",
+    "timestamp": "2026-09-11T09:42:35.037Z",
+    "portal": "Admin Console",
+    "action": "Login Attempt",
+    "status": "SUCCESS",
+    "message": "Administrator session unlocked successfully",
+    "ip": "105.116.11.99",
+    "userAgent": "Desktop Workstation"
+  },
+  {
+    "id": "log_1789118206717_qtoe",
+    "timestamp": "2026-09-11T09:16:46.717Z",
+    "portal": "Admin Console",
+    "action": "Login Attempt",
+    "status": "SUCCESS",
+    "message": "Administrator session unlocked successfully",
+    "ip": "105.116.11.99",
+    "userAgent": "Desktop Workstation"
+  },
+  {
+    "id": "log_1789118145604_0ahe",
+    "timestamp": "2026-09-11T09:15:45.604Z",
+    "portal": "Admin Console",
+    "action": "Login Attempt",
+    "status": "SUCCESS",
+    "message": "Administrator session unlocked successfully",
+    "ip": "105.116.11.99",
+    "userAgent": "Desktop Workstation"
+  },
+  {
     "id": "log_1789117748544_9g8a",
     "timestamp": "2026-09-11T09:09:08.544Z",
     "portal": "Admin Console",

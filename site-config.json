@@ -6,7 +6,7 @@
     "md": "images/uploads/md.jpg?v=1789117696322",
     "gm": "images/uploads/gm.png?v=1789117725764",
     "it": "images/uploads/it.png?v=1789117748543",
-    "procurement": "images/PROCUREMENT.jpeg"
+    "procurement": "images/uploads/procurement.png?v=1789119856063"
   },
   "servicesVisibility": {
     "drilling-chemicals": true,
@@ -16,5 +16,5 @@
     "security": true,
     "contracts": true
   },
-  "updatedAt": "2026-09-11T09:09:08.543Z"
+  "updatedAt": "2026-09-11T09:44:16.063Z"
 }
